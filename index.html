@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Διαχείριση Αποθήκης & Πελατών</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans leading-normal tracking-normal">
+
+    <div class="container mx-auto p-6">
+        
+        <div class="mb-6 bg-white p-6 rounded-lg shadow-sm flex flex-col md:flex-row justify-between items-center gap-4">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-800">Econment - Εσωτερικό Σύστημα</h1>
+                <p class="text-sm text-gray-500">Διαχείριση Αποθεμάτων & Κατάλογος Πελατών (LocalStorage)</p>
+                <nav class="flex space-x-4 mt-3">
+                    <a href="index.html" class="text-sm text-blue-600 border-b-2 border-blue-600 pb-1 transition font-bold">👥 Πελατολόγιο</a>
+                    <a href="inventory.html" class="text-sm text-gray-500 hover:text-blue-600 transition font-medium">📦 Αποθήκη (Στοκ)</a>
+                    <a href="orders.html" class="text-sm text-gray-500 hover:text-blue-600 transition font-medium">🚚 Διανομές / Παραγγελίες</a>
+                </nav>
+            </div>
+            
+            <div class="flex flex-wrap gap-2 justify-end">
+                <button onclick="exportBackup()" class="bg-gray-700 hover:bg-gray-800 text-white px-3 py-2 rounded shadow text-xs font-medium transition">
+                    💾 Εξαγωγή Backup
+                </button>
+                <button onclick="document.getElementById('importFile').click()" class="bg-gray-700 hover:bg-gray-800 text-white px-3 py-2 rounded shadow text-xs font-medium transition">
+                    📂 Εισαγωγή Backup
+                </button>
+                <input type="file" id="importFile" class="hidden" accept=".json" onchange="importBackup(event)">
+                
+                <button onclick="toggleModal(true)" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded shadow text-sm font-medium transition">
+                    + Προσθήκη Πελάτη
+                </button>
+            </div>
+        </div>
+
+        <div class="mb-4 flex flex-col md:flex-row gap-4 items-center justify-between">
+            <div class="w-full md:w-1/3">
+                <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="Αναζήτηση με Επωνυμία, ΑΦΜ, Ιδιοκτήτη..." 
+                       class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white shadow-sm text-sm">
+            </div>
+            <div class="text-sm text-gray-600">
+                Σύνολο: <span id="clientCount" class="font-bold text-blue-600">0</span> πελάτες
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th onclick="sortTable(0)" class="cursor-pointer px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hover:bg-gray-100 select-none">Επωνυμία / Επιχείρηση <span id="sortIcon0">↕</span></th>
+                            <th onclick="sortTable(1)" class="cursor-pointer px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hover:bg-gray-100 select-none">ΑΦΜ <span id="sortIcon1">↕</span></th>
+                            <th onclick="sortTable(2)" class="cursor-pointer px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hover:bg-gray-100 select-none">Τύπος <span id="sortIcon2">↕</span></th>
+                            <th onclick="sortTable(3)" class="cursor-pointer px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hover:bg-gray-100 select-none">Πόλη / Διεύθυνση <span id="sortIcon3">↕</span></th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider select-none">Ενέργειες</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200" id="tableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="customerModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-xl shadow-xl max-w-lg w-full overflow-hidden">
+            <div class="bg-gray-50 px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                <h3 class="text-lg font-bold text-gray-800">Καρτέλα Νέου Πελάτη</h3>
+                <button onclick="toggleModal(false)" class="text-gray-400 hover:text-gray-600 text-xl font-bold">&times;</button>
+            </div>
+            <form id="clientForm" onsubmit="saveClient(event)" class="p-6 space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="col-span-1 md:col-span-2">
+                        <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Επωνυμία Επιχείρησης *</label>
+                        <input type="text" id="formCompanyName" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 outline-none text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Όνομα Ιδιοκτήτη</label>
+                        <input type="text" id="formOwner" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 outline-none text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-gray-600 mb-1">ΑΦΜ *</label>
+                        <input type="text" id="formVat" required pattern="[0-9]{9}" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 outline-none text-sm font-mono">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Τύπος</label>
+                        <select id="formType" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 outline-none text-sm bg-white">
+                            <option value="Τεχνικό Γραφείο">Τεχνικό Γραφείο</option>
+                            <option value="Logistics">Logistics</option>
+                            <option value="Λιανικό Εμπόριο">Λιανικό Εμπόριο</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Τηλέφωνο</label>
+                        <input type="text" id="formPhone" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 outline-none text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Πόλη *</label>
+                        <input type="text" id="formCity" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 outline-none text-sm">
+                    </div>
+                    <div class="col-span-1 md:col-span-2">
+                        <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Διεύθυνση</label>
+                        <input type="text" id="formAddress" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 outline-none text-sm">
+                    </div>
+                </div>
+                <div class="pt-4 border-t flex justify-end space-x-2">
+                    <button type="button" onclick="toggleModal(false)" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm">Ακύρωση</button>
+                    <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm shadow">Αποθήκευση</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const defaultClients = [
+            { companyName: "Alpha Διανομές Α.Ε.", owner: "Νίκος Παπαδόπουλος", vat: "099123456", type: "Logistics", phone: "2101111111", city: "Αθήνα", address: "Λεωφ. Κηφισού 45" },
+            { companyName: "Econment Ενεργειακή", owner: "Ιωάννης Φανούρης", vat: "998877665", type: "Τεχνικό Γραφείο", phone: "2821033333", city: "Χανιά", address: "Ηρώων Πολυτεχνείου 10" }
+        ];
+
+        let clients = [];
+        let sortDirections = { 0: false, 1: false, 2: false, 3: false };
+
+        function loadClients() {
+            const stored = localStorage.getItem('econment_clients');
+            if (stored) {
+                clients = JSON.parse(stored);
+            } else {
+                clients = defaultClients;
+                localStorage.setItem('econment_clients', JSON.stringify(clients));
+            }
+            renderTable(clients);
+        }
+
+        function toggleModal(show) {
+            const modal = document.getElementById('customerModal');
+            if (show) modal.classList.remove('hidden');
+            else { modal.classList.add('hidden'); document.getElementById('clientForm').reset(); }
+        }
+
+        function saveClient(event) {
+            event.preventDefault();
+            const newClient = {
+                companyName: document.getElementById('formCompanyName').value,
+                owner: document.getElementById('formOwner').value || "—",
+                vat: document.getElementById('formVat').value,
+                type: document.getElementById('formType').value,
+                phone: document.getElementById('formPhone').value || "—",
+                city: document.getElementById('formCity').value,
+                address: document.getElementById('formAddress').value || "—"
+            };
+
+            clients.push(newClient);
+            localStorage.setItem('econment_clients', JSON.stringify(clients));
+            renderTable(clients);
+            toggleModal(false);
+        }
+
+        // ΣΥΝΑΡΤΗΣΗ ΔΙΑΓΡΑΦΗΣ ΠΕΛΑΤΗ
+        function deleteClient(index) {
+            const clientName = clients[index].companyName;
+            if (confirm(`Είστε σίγουρος ότι θέλετε να διαγράψετε τον πελάτη "${clientName}";`)) {
+                clients.splice(index, 1);
+                localStorage.setItem('econment_clients', JSON.stringify(clients));
+                renderTable(clients);
+            }
+        }
+
+        function renderTable(data) {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+            data.forEach((client, index) => {
+                // Βρίσκουμε το σωστό ID ψάχνοντας στον αρχικό πίνακα clients
+                const actualIndex = clients.indexOf(client);
+                tbody.innerHTML += `
+                    <tr class="hover:bg-gray-50 transition">
+                        <td class="px-6 py-4 whitespace-nowrap"><div class="text-sm font-bold text-gray-900">${client.companyName}</div><div class="text-xs text-gray-500">Ιδιοκτήτης: ${client.owner}</div></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-700 font-medium">${client.vat}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><span class="px-2 inline-flex text-xs font-semibold rounded-full bg-blue-100 text-blue-800">${client.type}</span></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><div class="font-semibold text-gray-800">${client.city}</div><div class="text-xs text-gray-500">${client.address} | Τηλ: ${client.phone}</div></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <button onclick="deleteClient(${actualIndex})" class="text-red-600 hover:text-red-900 font-semibold bg-red-50 hover:bg-red-100 px-2 py-1 rounded transition">
+                                🗑️ Διαγραφή
+                            </button>
+                        </td>
+                    </tr>`;
+            });
+            document.getElementById('clientCount').innerText = data.length;
+        }
+
+        function exportBackup() {
+            const backupData = {
+                clients: JSON.parse(localStorage.getItem('econment_clients') || '[]'),
+                products: JSON.parse(localStorage.getItem('econment_products') || '[]'),
+                orders: JSON.parse(localStorage.getItem('econment_orders') || '[]')
+            };
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData, null, 4));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", "econment_system_backup.json");
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        function importBackup(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    if (imported.clients) localStorage.setItem('econment_clients', JSON.stringify(imported.clients));
+                    if (imported.products) localStorage.setItem('econment_products', JSON.stringify(imported.products));
+                    if (imported.orders) localStorage.setItem('econment_orders', JSON.stringify(imported.orders));
+                    alert("Το Backup εισήχθη με επιτυχία! Η σελίδα θα ανανεωθεί.");
+                    location.reload();
+                } catch (err) { alert("Σφάλμα κατά την εισαγωγή."); }
+            };
+            reader.readAsText(file);
+        }
+
+        function sortTable(columnIndex) {
+            const isDescending = sortDirections[columnIndex];
+            sortDirections[columnIndex] = !isDescending;
+            clients.sort((a, b) => {
+                let valA = columnIndex === 0 ? a.companyName : columnIndex === 1 ? a.vat : columnIndex === 2 ? a.type : a.city;
+                let valB = columnIndex === 0 ? b.companyName : columnIndex === 1 ? b.vat : columnIndex === 2 ? b.type : b.city;
+                return isDescending ? valB.localeCompare(valA, 'el') : valA.localeCompare(valB, 'el');
+            });
+            renderTable(clients);
+        }
+
+        function filterTable() {
+            const filter = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = clients.filter(c => c.companyName.toLowerCase().includes(filter) || c.vat.includes(filter) || c.owner.toLowerCase().includes(filter));
+            renderTable(filtered);
+        }
+
+        window.onload = loadClients;
+    </script>
+</body>
+</html>
