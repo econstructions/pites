@@ -37,7 +37,8 @@
                         <tr>
                             <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">ID / Ημερομηνία</th>
                             <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Πελάτης / Προορισμός</th>
-                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Προϊόντα & Ποσότητα</th>
+                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Προϊόν</th>
+                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Ποσότητα & Συμπληρώματα</th>
                             <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Τύπος Φόρτωσης</th>
                             <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Κατάσταση</th>
                             <th class="px-6 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">Ενέργειες</th>
@@ -187,7 +188,6 @@
             const inputQty = parseInt(document.getElementById('orderQty').value);
             const statusVal = document.getElementById('orderStatus').value;
 
-            // Έλεγχος αποθέματος αν επιλεγεί απευθείας η κατάσταση "Παραδόθηκε"
             if (statusVal === "Παραδόθηκε" && inputQty > maxStock) {
                 alert(`⚠️ Ανεπαρκές απόθεμα! Δεν μπορείτε να εκδώσετε παραδομένη παραγγελία για ${inputQty} τεμάχια (Διαθέσιμα: ${maxStock}).`);
                 return;
@@ -198,7 +198,6 @@
             const clientCity = clientFull.split(' (')[1].replace(')', '');
             const today = new Date().toLocaleDateString('el-GR');
 
-            // Αν η κατάσταση είναι "Παραδόθηκε", αφαιρούμε άμεσα το στοκ
             if (statusVal === "Παραδόθηκε") {
                 let products = JSON.parse(localStorage.getItem('econment_products') || '[]');
                 let prodIndex = products.findIndex(p => p.name === selectProd.value);
@@ -225,25 +224,72 @@
             toggleModal(false);
         }
 
+        // ➕ / ➖ ΓΡΗΓΟΡΗ ΜΕΤΑΒΟΛΗ ΠΟΣΟΤΗΤΑΣ ΠΑΡΑΓΓΕΛΙΑΣ & ΑΥΤΟΜΑΤΟΣ ΕΛΕΓΧΟΣ ΑΠΟΘΗΚΗΣ
+        function adjustOrderQty(index, direction) {
+            const inputEl = document.getElementById(`adjustOrderAmt-${index}`);
+            const amount = parseInt(inputEl.value);
+
+            if (isNaN(amount) || amount <= 0) {
+                alert("Παρακαλώ εισάγετε μια έγκυρη θετική ποσότητα.");
+                return;
+            }
+
+            const order = orders[index];
+            let products = JSON.parse(localStorage.getItem('econment_products') || '[]');
+
+            // Αν η παραγγελία είναι "Παραδόθηκε", πρέπει να ελέγξουμε και να ενημερώσουμε το στοκ
+            if (order.status === "Παραδόθηκε") {
+                let prodIndex = products.findIndex(p => p.name === order.product);
+                if (prodIndex !== -1) {
+                    if (direction === 1) { // Προσθήκη τεμαχίων στην παραγγελία (Αφαίρεση από την αποθήκη)
+                        if (products[prodIndex].qty < amount) {
+                            alert(`⚠️ Ανεπαρκές στοκ στην αποθήκη! Διαθέσιμα: ${products[prodIndex].qty} τεμ. (Ζητήθηκαν επιπλέον: ${amount})`);
+                            return;
+                        }
+                        products[prodIndex].qty -= amount;
+                    } else if (direction === -1) { // Αφαίρεση τεμαχίων από την παραγγελία (Επιστροφή στην αποθήκη)
+                        if (order.qty <= amount) {
+                            alert(`Δεν μπορείτε να αφαιρέσετε ${amount} τεμάχια. Η τρέχουσα ποσότητα παραγγελίας είναι ${order.qty}. Αν θέλετε, διαγράψτε την παραγγελία.`);
+                            return;
+                        }
+                        products[prodIndex].qty += amount;
+                    }
+                    localStorage.setItem('econment_products', JSON.stringify(products));
+                }
+            } else {
+                // Αν η παραγγελία ΔΕΝ έχει παραδοθεί ακόμα, απλά ελέγχουμε να μην πέσει κάτω από το 1
+                if (direction === -1 && order.qty <= amount) {
+                    alert(`Η ποσότητα της παραγγελίας δεν μπορεί να γίνει μικρότερη από 1.`);
+                    return;
+                }
+            }
+
+            // Εφαρμογή της αλλαγής στην παραγγελία
+            order.qty += (direction * amount);
+            localStorage.setItem('econment_orders', JSON.stringify(orders));
+            
+            // Επαναφορά του input στο 1
+            inputEl.value = 1;
+            renderOrders();
+        }
+
         function changeStatus(index, newStatus) {
             let products = JSON.parse(localStorage.getItem('econment_products') || '[]');
             const order = orders[index];
             const oldStatus = order.status;
 
-            // 1. Μετάβαση σε "Παραδόθηκε" -> Αφαίρεση από την αποθήκη
             if (newStatus === "Παραδόθηκε" && oldStatus !== "Παραδόθηκε") {
                 let prodIndex = products.findIndex(p => p.name === order.product);
                 if (prodIndex !== -1) {
                     if (products[prodIndex].qty < order.qty) {
-                        alert(`⚠️ Το στοκ στην Αποθήκη δεν επαρκεί! (Διαθέσιμα: ${products[prodIndex].qty} τεμ, Απαιτούνται: ${order.qty} τεμ)`);
-                        renderOrders(); // Επαναφορά της εμφάνισης
+                        alert(`⚠️ Το στοκ στην Αποθήκη δεν επαρκεί! (Διαθέσιμα: ${products[prodIndex].qty} τεμ, Απαιτούνται: ${order.qty}  τεμ)`);
+                        renderOrders(); 
                         return;
                     }
                     products[prodIndex].qty -= order.qty;
                     localStorage.setItem('econment_products', JSON.stringify(products));
                 }
             }
-            // 2. Μετάβαση από "Παραδόθηκε" σε άλλη κατάσταση -> Επιστροφή στοκ στην αποθήκη
             else if (oldStatus === "Παραδόθηκε" && newStatus !== "Παραδόθηκε") {
                 let prodIndex = products.findIndex(p => p.name === order.product);
                 if (prodIndex !== -1) {
@@ -260,7 +306,6 @@
         function deleteOrder(index) {
             const order = orders[index];
             if (confirm(`Θέλετε να διαγράψετε οριστικά την παραγγελία ${order.id};`)) {
-                // Αν η παραγγελία ήταν "Παραδόθηκε", επιστρέφουμε το στοκ στην αποθήκη
                 if (order.status === "Παραδόθηκε") {
                     let products = JSON.parse(localStorage.getItem('econment_products') || '[]');
                     let prodIndex = products.findIndex(p => p.name === order.product);
@@ -295,7 +340,16 @@
                             <div class="text-xs text-gray-500">📍 Προορισμός: ${order.city}</div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
-                            ${order.product} <span class="text-indigo-600 font-bold">(x${order.qty})</span>
+                            ${order.product}
+                        </td>
+                        <!-- Στήλη Ποσότητας με Inline Κουμπιά + και - -->
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold">
+                            <div class="flex items-center space-x-1.5">
+                                <button onclick="adjustOrderQty(${index}, -1)" class="bg-red-500 hover:bg-red-600 text-white font-extrabold px-2 py-0.5 rounded transition text-xs shadow-sm">-</button>
+                                <span class="text-gray-900 font-bold px-1 text-sm bg-gray-50 border rounded min-w-[2.5rem] text-center py-0.5">x${order.qty}</span>
+                                <input type="number" id="adjustOrderAmt-${index}" value="1" min="1" class="w-11 text-center border border-gray-300 rounded py-0.5 text-xs focus:ring-1 focus:ring-indigo-500 outline-none font-bold">
+                                <button onclick="adjustOrderQty(${index}, 1)" class="bg-green-500 hover:bg-green-600 text-white font-extrabold px-2 py-0.5 rounded transition text-xs shadow-sm">+</button>
+                            </div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm">
                             ${order.freezer ? '<span class="px-2 py-1 text-xs font-bold rounded bg-cyan-100 text-cyan-800 border border-cyan-200">❄️ ΨΥΧΟΜΕΝΟ</span>' : '<span class="px-2 py-1 text-xs text-gray-500 bg-gray-100 rounded">Απλό</span>'}
