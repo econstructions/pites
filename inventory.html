@@ -1,65 +1,73 @@
+```html
 <!DOCTYPE html>
 <html lang="el">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Διαχείριση Αποθήκης - Στοκ</title>
+    <title>Econment - Αποθήκη</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 font-sans leading-normal tracking-normal">
 
-    <div class="container mx-auto p-6">
+    <div class="container mx-auto p-4 md:p-6">
         
-        <div class="mb-6 bg-white p-6 rounded-lg shadow-sm flex flex-col md:flex-row justify-between items-center gap-4">
+        <!-- Header & Navigation -->
+        <div class="mb-6 bg-white p-6 rounded-lg shadow-sm flex flex-col lg:flex-row justify-between items-center gap-4 border border-gray-200">
             <div>
                 <h1 class="text-2xl font-bold text-gray-800">Econment - Κεντρική Αποθήκη</h1>
-                <p class="text-sm text-gray-500">Έλεγχος Αποθεμάτων, Ορίων Ασφαλείας & Ψυκτικών Θαλάμων</p>
-                <nav class="flex space-x-4 mt-3">
+                <p class="text-sm text-gray-500 mt-1">Έλεγχος Αποθεμάτων, Ορίων Ασφαλείας & Ψυκτικών Θαλάμων</p>
+                <nav class="flex flex-wrap gap-2 md:gap-4 mt-4">
                     <a href="index.html" class="text-sm text-gray-500 hover:text-blue-600 transition font-medium">👥 Πελατολόγιο</a>
-                    <a href="inventory.html" class="text-sm text-blue-600 border-b-2 border-blue-600 pb-1 transition font-bold">📦 Αποθήκη (Στοκ)</a>
+                    <a href="inventory.html" class="text-sm text-blue-600 border-b-2 border-blue-600 pb-1 font-bold">📦 Αποθήκη (Στοκ)</a>
                     <a href="orders.html" class="text-sm text-gray-500 hover:text-blue-600 transition font-medium">🚚 Διανομές / Παραγγελίες</a>
                 </nav>
             </div>
             <div>
-                <button onclick="toggleModal(true)" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow text-sm font-medium transition">
+                <button onclick="toggleModal(true)" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow text-sm font-bold transition">
                     + Νέο Προϊόν
                 </button>
             </div>
         </div>
 
+        <!-- Αναζήτηση και Φίλτρα -->
         <div class="mb-4 flex flex-col md:flex-row gap-4 items-center justify-between">
             <div class="w-full md:w-1/3">
                 <input type="text" id="searchInput" onkeyup="filterInventory()" placeholder="Αναζήτηση με Κωδικό ή Όνομα..." 
                        class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white shadow-sm text-sm">
             </div>
-            <div class="flex gap-2">
+            <div class="flex flex-wrap gap-2">
                 <button onclick="filterType('ALL')" id="btnAll" class="bg-gray-800 text-white text-xs px-3 py-1.5 rounded-full font-medium shadow-sm">Όλα</button>
-                <button onclick="filterType('FREEZER')" id="btnFreezer" class="bg-white text-gray-600 text-xs px-3 py-1.5 rounded-full font-medium border border-gray-200 shadow-sm">Μόνο Κατάψυξη ❄️</button>
-                <button onclick="filterType('ALERT')" id="btnAlert" class="bg-white text-gray-600 text-xs px-3 py-1.5 rounded-full font-medium border border-gray-200 shadow-sm">Σε Έλλειψη ⚠️</button>
+                <button onclick="filterType('FREEZER')" id="btnFreezer" class="bg-white text-gray-600 hover:bg-gray-50 text-xs px-3 py-1.5 rounded-full font-medium border border-gray-200 shadow-sm">Μόνο Κατάψυξη ❄️</button>
+                <button onclick="filterType('ALERT')" id="btnAlert" class="bg-white text-gray-600 hover:bg-gray-50 text-xs px-3 py-1.5 rounded-full font-medium border border-gray-200 shadow-sm">Σε Έλλειψη ⚠️</button>
             </div>
         </div>
 
-        <div class="bg-white rounded-lg shadow overflow-hidden">
+        <!-- Πίνακας Αποθήκης -->
+        <div class="bg-white rounded-lg shadow overflow-hidden border border-gray-200">
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th onclick="sortInventory(0)" class="cursor-pointer px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hover:bg-gray-100">Κωδικός <span id="sortIcon0">↕</span></th>
-                            <th onclick="sortInventory(1)" class="cursor-pointer px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hover:bg-gray-100">Περιγραφή / Προϊόν <span id="sortIcon1">↕</span></th>
-                            <th onclick="sortInventory(2)" class="cursor-pointer px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hover:bg-gray-100">Κατάψυξη ❄️ <span id="sortIcon2">↕</span></th>
-                            <th onclick="sortInventory(3)" class="cursor-pointer px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hover:bg-gray-100">Διαθέσιμο Απόθεμα <span id="sortIcon3">↕</span></th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Όριο Ασφαλείας</th>
-                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Ενέργειες</th>
+                            <th onclick="sortInventory(0)" class="cursor-pointer px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider hover:bg-gray-100">Κωδικός <span id="sortIcon0">↕</span></th>
+                            <th onclick="sortInventory(1)" class="cursor-pointer px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider hover:bg-gray-100">Περιγραφή / Προϊόν <span id="sortIcon1">↕</span></th>
+                            <th onclick="sortInventory(2)" class="cursor-pointer px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider hover:bg-gray-100">Κατάψυξη ❄️ <span id="sortIcon2">↕</span></th>
+                            <th onclick="sortInventory(3)" class="cursor-pointer px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider hover:bg-gray-100">Διαθέσιμο Απόθεμα <span id="sortIcon3">↕</span></th>
+                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Όριο Ασφαλείας</th>
+                            <th class="px-6 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">Ενέργειες</th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white divide-y divide-gray-200" id="inventoryBody"></tbody>
+                    <tbody class="bg-white divide-y divide-gray-200" id="inventoryBody">
+                        <!-- Φορτώνεται δυναμικά -->
+                    </tbody>
                 </table>
             </div>
         </div>
     </div>
 
+    <!-- MODAL ΦΟΡΜΑΣ ΠΡΟΪΟΝΤΟΣ -->
     <div id="productModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-xl shadow-xl max-w-md w-full overflow-hidden">
+        <div class="bg-white rounded-xl shadow-xl max-w-md w-full overflow-hidden border border-gray-200">
             <div class="bg-gray-50 px-6 py-4 border-b border-gray-200 flex justify-between items-center">
                 <h3 class="text-lg font-bold text-gray-800">Εισαγωγή Νέου Προϊόντος</h3>
                 <button onclick="toggleModal(false)" class="text-gray-400 hover:text-gray-600 text-xl font-bold">&times;</button>
@@ -67,29 +75,29 @@
             <form id="productForm" onsubmit="saveProduct(event)" class="p-6 space-y-4">
                 <div>
                     <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Κωδικός (SKU) *</label>
-                    <input type="text" id="prodSku" required class="w-full px-3 py-2 border rounded-lg outline-none text-sm font-mono">
+                    <input type="text" id="prodSku" required class="w-full px-3 py-2 border rounded-lg outline-none text-sm font-mono focus:ring-2 focus:ring-blue-500">
                 </div>
                 <div>
                     <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Όνομα / Περιγραφή *</label>
-                    <input type="text" id="prodName" required class="w-full px-3 py-2 border rounded-lg outline-none text-sm">
+                    <input type="text" id="prodName" required class="w-full px-3 py-2 border rounded-lg outline-none text-sm focus:ring-2 focus:ring-blue-500">
                 </div>
-                <div class="flex items-center p-2 bg-blue-50 rounded-lg">
-                    <input type="checkbox" id="prodFreezer" class="w-4 h-4 text-blue-600 border-gray-300 rounded">
-                    <label for="prodFreezer" class="ml-2 text-sm font-semibold text-gray-700 select-none">Απαιτεί Κατάψυξη; ❄️</label>
+                <div class="flex items-center p-2.5 bg-blue-50 rounded-lg">
+                    <input type="checkbox" id="prodFreezer" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                    <label for="prodFreezer" class="ml-2 text-sm font-semibold text-gray-700 select-none">Απαιτεί Κατάψυξη / Ψυγείο; ❄️</label>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Απόθεμα *</label>
-                        <input type="number" id="prodQty" required min="0" class="w-full px-3 py-2 border rounded-lg text-sm">
+                        <input type="number" id="prodQty" required min="0" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500">
                     </div>
                     <div>
                         <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Όριο Ασφαλείας *</label>
-                        <input type="number" id="prodMin" required min="0" class="w-full px-3 py-2 border rounded-lg text-sm">
+                        <input type="number" id="prodMin" required min="0" class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500">
                     </div>
                 </div>
                 <div class="pt-4 border-t flex justify-end space-x-2">
-                    <button type="button" onclick="toggleModal(false)" class="bg-gray-200 px-4 py-2 rounded-lg text-sm">Ακύρωση</button>
-                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm shadow">Αποθήκευση</button>
+                    <button type="button" onclick="toggleModal(false)" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm">Ακύρωση</button>
+                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow">Αποθήκευση</button>
                 </div>
             </form>
         </div>
@@ -134,7 +142,6 @@
             toggleModal(false);
         }
 
-        // ΣΥΝΑΡΤΗΣΗ ΔΙΑΓΡΑΦΗΣ ΠΡΟΪΟΝΤΟΣ
         function deleteProduct(index) {
             const prodName = products[index].name;
             if (confirm(`Είστε σίγουρος ότι θέλετε να διαγράψετε το προϊόν "${prodName}" από το Στοκ;`)) {
@@ -148,20 +155,25 @@
             const tbody = document.getElementById('inventoryBody');
             tbody.innerHTML = '';
             data.forEach((prod) => {
-                const actualIndex = products.indexOf(prod); // Βρίσκουμε το ID στον κεντρικό πίνακα
+                const actualIndex = products.indexOf(prod);
                 const isLowStock = prod.qty <= prod.minQty;
-                const qtyClass = isLowStock ? 'text-red-600 font-bold bg-red-50 px-2 py-1 rounded' : 'text-gray-900 font-semibold';
+                const qtyClass = isLowStock ? 'text-red-600 font-bold bg-red-50 px-2.5 py-1 rounded border border-red-200' : 'text-gray-900 font-semibold';
                 const rowStatusAlert = isLowStock ? '⚠️ Χαμηλό Στοκ' : '✓ Επαρκές';
 
                 tbody.innerHTML += `
                     <tr class="hover:bg-gray-50 transition">
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-600">${prod.sku}</td>
-                        <td class="px-6 py-4 whitespace-nowrap"><div class="text-sm font-bold text-gray-900">${prod.name}</div><div class="text-xs text-gray-400">Κατάσταση: ${rowStatusAlert}</div></td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm">${prod.freezer ? '<span class="px-2.5 py-1 text-xs font-bold rounded-full bg-cyan-100 text-cyan-800">❄️ ΝΑΙ</span>' : '<span class="px-2.5 py-1 text-xs rounded-full bg-gray-100 text-gray-600">Όχι</span>'}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-bold text-gray-900">${prod.name}</div>
+                            <div class="text-xs text-gray-400">Κατάσταση: ${rowStatusAlert}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                            ${prod.freezer ? '<span class="px-2.5 py-1 text-xs font-bold rounded-full bg-cyan-100 text-cyan-800 border border-cyan-200">❄️ ΝΑΙ</span>' : '<span class="px-2.5 py-1 text-xs rounded-full bg-gray-100 text-gray-600">Όχι</span>'}
+                        </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm"><span class="${qtyClass}">${prod.qty}</span></td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-medium">${prod.minQty}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <button onclick="deleteProduct(${actualIndex})" class="text-red-600 hover:text-red-900 font-semibold bg-red-50 hover:bg-red-100 px-2 py-1 rounded transition">
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm">
+                            <button onclick="deleteProduct(${actualIndex})" class="text-red-600 hover:text-red-900 font-bold bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded transition">
                                 🗑️ Διαγραφή
                             </button>
                         </td>
@@ -172,6 +184,21 @@
         function sortInventory(columnIndex) {
             const isDescending = sortDirections[columnIndex];
             sortDirections[columnIndex] = !isDescending;
+
+            [0, 1, 2, 3].forEach(idx => {
+                const icon = document.getElementById(`sortIcon${idx}`);
+                if (icon) {
+                    icon.innerText = '↕';
+                    icon.className = 'ml-1 text-gray-400';
+                }
+            });
+
+            const currentIcon = document.getElementById(`sortIcon${columnIndex}`);
+            if (currentIcon) {
+                currentIcon.innerText = isDescending ? '▼' : '▲';
+                currentIcon.className = 'ml-1 text-blue-600 font-bold';
+            }
+
             products.sort((a, b) => {
                 if (columnIndex === 3) return isDescending ? b.qty - a.qty : a.qty - b.qty;
                 let valA = columnIndex === 0 ? a.sku : columnIndex === 1 ? a.name : a.freezer ? "1" : "0";
@@ -183,6 +210,20 @@
 
         function filterType(type) {
             currentFilter = type;
+            const buttons = {
+                'ALL': document.getElementById('btnAll'),
+                'FREEZER': document.getElementById('btnFreezer'),
+                'ALERT': document.getElementById('btnAlert')
+            };
+            
+            Object.values(buttons).forEach(btn => {
+                btn.className = "bg-white text-gray-600 hover:bg-gray-50 text-xs px-3 py-1.5 rounded-full font-medium border border-gray-200 shadow-sm";
+            });
+
+            if (type === 'ALL') buttons['ALL'].className = "bg-gray-800 text-white text-xs px-3 py-1.5 rounded-full font-medium shadow-sm";
+            if (type === 'FREEZER') buttons['FREEZER'].className = "bg-cyan-600 text-white text-xs px-3 py-1.5 rounded-full font-medium shadow-sm";
+            if (type === 'ALERT') buttons['ALERT'].className = "bg-red-600 text-white text-xs px-3 py-1.5 rounded-full font-medium shadow-sm";
+
             applyFiltersAndRender();
         }
 
@@ -200,3 +241,5 @@
     </script>
 </body>
 </html>
+
+```
