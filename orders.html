@@ -36,6 +36,7 @@
         </div>
     </div>
 
+    <!-- MODAL -->
     <div id="orderModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
             <form id="orderForm" onsubmit="saveOrder(event)" class="space-y-4">
@@ -62,10 +63,12 @@
 
     <script>
         let orders = [];
+        
         function loadOrders() {
             orders = JSON.parse(localStorage.getItem('econment_orders') || '[]');
             renderOrders();
         }
+        
         function populateDropdowns() {
             const clientSelect = document.getElementById('orderClient');
             const productSelect = document.getElementById('orderProduct');
@@ -78,11 +81,13 @@
             productSelect.innerHTML = liveProducts.length === 0 ? '<option value="">⚠️ Προσθέστε προϊόντα στην Αποθήκη</option>' : '';
             liveProducts.forEach(p => { productSelect.innerHTML += `<option value="${p.name}">${p.name} (Διαθέσιμο: ${p.qty})</option>`; });
         }
+        
         function toggleModal(show) {
             if (show) populateDropdowns();
             document.getElementById('orderModal').classList.toggle('hidden', !show);
             if(!show) document.getElementById('orderForm').reset();
         }
+        
         function saveOrder(event) {
             event.preventDefault();
             const clientFull = document.getElementById('orderClient').value;
@@ -95,29 +100,89 @@
 
             orders.push({
                 id: "ORD-" + Math.floor(1000 + Math.random() * 9000),
-                date: formattedDate, client: clientName, city: clientCity,
-                product: prodVal, qty: parseInt(document.getElementById('orderQty').value), status: "Σε αναμονή"
+                date: formattedDate, 
+                client: clientName, 
+                city: clientCity,
+                product: prodVal, 
+                qty: parseInt(document.getElementById('orderQty').value), 
+                status: "Σε αναμονή"
             });
             localStorage.setItem('econment_orders', JSON.stringify(orders));
             renderOrders();
             toggleModal(false);
         }
+
+        // Η ΝΕΑ ΛΟΓΙΚΗ ΓΙΑ ΤΗΝ ΑΛΛΑΓΗ ΚΑΤΑΣΤΑΣΗΣ ΚΑΙ ΕΝΗΜΕΡΩΣΗ ΑΠΟΘΗΚΗΣ
+        function updateStatus(index, newStatus) {
+            let products = JSON.parse(localStorage.getItem('econment_products') || '[]');
+            const order = orders[index];
+            const oldStatus = order.status;
+
+            // Αν αλλάξει σε "Παραδόθηκε" (και δεν ήταν ήδη), αφαιρούμε από το στοκ
+            if (newStatus === "Παραδόθηκε" && oldStatus !== "Παραδόθηκε") {
+                let prodIndex = products.findIndex(p => p.name === order.product);
+                if (prodIndex !== -1) {
+                    if (products[prodIndex].qty < order.qty) {
+                        alert(`⚠️ Ανεπαρκές απόθεμα στην αποθήκη! Διαθέσιμα: ${products[prodIndex].qty}`);
+                        renderOrders(); // Επαναφέρει το dropdown στην προηγούμενη κατάσταση
+                        return;
+                    }
+                    products[prodIndex].qty -= order.qty;
+                    localStorage.setItem('econment_products', JSON.stringify(products));
+                }
+            } 
+            // Αν από "Παραδόθηκε" το γυρίσεις πίσω σε κάτι άλλο, επιστρέφουμε τα προϊόντα στο στοκ
+            else if (oldStatus === "Παραδόθηκε" && newStatus !== "Παραδόθηκε") {
+                let prodIndex = products.findIndex(p => p.name === order.product);
+                if (prodIndex !== -1) {
+                    products[prodIndex].qty += order.qty;
+                    localStorage.setItem('econment_products', JSON.stringify(products));
+                }
+            }
+
+            // Αποθήκευση της νέας κατάστασης
+            orders[index].status = newStatus;
+            localStorage.setItem('econment_orders', JSON.stringify(orders));
+            renderOrders();
+        }
+
         function deleteOrder(index) {
             if (confirm("Διαγραφή παραγγελίας;")) {
+                // Αν διαγραφεί παραγγελία που είχε ήδη παραδοθεί, επιστρέφουμε το στοκ στην αποθήκη
+                if (orders[index].status === "Παραδόθηκε") {
+                    let products = JSON.parse(localStorage.getItem('econment_products') || '[]');
+                    let prodIndex = products.findIndex(p => p.name === orders[index].product);
+                    if (prodIndex !== -1) {
+                        products[prodIndex].qty += orders[index].qty;
+                        localStorage.setItem('econment_products', JSON.stringify(products));
+                    }
+                }
                 orders.splice(index, 1);
                 localStorage.setItem('econment_orders', JSON.stringify(orders));
                 renderOrders();
             }
         }
+        
         function renderOrders() {
             const tbody = document.getElementById('ordersBody'); tbody.innerHTML = '';
             orders.forEach((order, index) => {
+                // Δυναμικό χρώμα ανάλογα με την κατάσταση
+                let selectColor = "bg-yellow-100 text-yellow-800 border-yellow-300";
+                if(order.status === "Παραδόθηκε") selectColor = "bg-green-100 text-green-800 border-green-300";
+                if(order.status === "Ακυρώθηκε") selectColor = "bg-red-100 text-red-800 border-red-300";
+
                 tbody.innerHTML += `
                     <tr class="hover:bg-gray-50">
                         <td class="px-6 py-4 text-sm font-mono"><strong>${order.id}</strong><br><span class="text-xs text-gray-400">${order.date}</span></td>
                         <td class="px-6 py-4 text-sm"><strong>${order.client}</strong><br><span class="text-xs text-gray-500">📍 ${order.city}</span></td>
                         <td class="px-6 py-4 text-sm font-medium text-gray-900">${order.product} <span class="text-indigo-600 font-bold">(x${order.qty})</span></td>
-                        <td class="px-6 py-4 text-sm"><span class="px-2 py-1 text-xs font-bold rounded bg-purple-100 text-purple-800">${order.status}</span></td>
+                        <td class="px-6 py-4 text-sm">
+                            <select onchange="updateStatus(${index}, this.value)" class="text-xs font-bold rounded p-1 border ${selectColor} bg-white cursor-pointer focus:outline-none">
+                                <option value="Σε αναμονή" ${order.status === 'Σε αναμονή' ? 'selected' : ''}>⏳ Σε αναμονή</option>
+                                <option value="Παραδόθηκε" ${order.status === 'Παραδόθηκε' ? 'selected' : ''}>✅ Παραδόθηκε</option>
+                                <option value="Ακυρώθηκε" ${order.status === 'Ακυρώθηκε' ? 'selected' : ''}>❌ Ακυρώθηκε</option>
+                            </select>
+                        </td>
                         <td class="px-6 py-4 text-right text-sm">
                             <button onclick="deleteOrder(${index})" class="text-red-600 bg-red-50 px-2 py-1 rounded">🗑️</button>
                         </td>
