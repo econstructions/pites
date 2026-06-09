@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ΕΠΩΝΥΜΙΑ ΕΠΙΧΕΙΡΗΣΗΣ - Προμηθευτές</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&display=swap" rel="stylesheet">
+</head>
+<body class="bg-gray-100 font-sans leading-normal tracking-normal">
+
+    <div class="container mx-auto p-4 md:p-6">
+        
+        <!-- Header & Navigation -->
+        <div class="mb-6 bg-white p-6 rounded-lg shadow-sm flex flex-col lg:flex-row justify-between items-center gap-4 border border-gray-200">
+            <div>
+                <h1 class="text-3xl text-gray-900 uppercase" style="font-family: 'Montserrat', sans-serif; font-weight: 900; letter-spacing: -0.05em;">ΕΠΩΝΥΜΙΑ ΕΠΙΧΕΙΡΗΣΗΣ</h1>
+                <p class="text-sm text-gray-500 mt-1">Κατάλογος Προμηθευτών / Συνεργατών</p>
+                <nav class="flex flex-wrap gap-2 md:gap-4 mt-4">
+                    <a href="customers.html" class="text-sm text-gray-500 hover:text-blue-600 transition font-medium">👥 Πελατολόγιο</a>
+                    <a href="providers.html" class="text-sm text-blue-600 border-b-2 border-blue-600 pb-1 font-bold">🏢 Προμηθευτές</a>
+                    <a href="inventory.html" class="text-sm text-gray-500 hover:text-blue-600 transition font-medium">📦 Αποθήκη (Στοκ)</a>
+                    <a href="orders.html" class="text-sm text-gray-500 hover:text-blue-600 transition font-medium">🚚 Διανομές</a>
+                </nav>
+            </div>
+            
+            <div class="flex flex-wrap gap-2 justify-end w-full lg:w-auto">
+                <button onclick="openModalForAdd()" class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded shadow text-sm font-bold transition">
+                    + Προσθήκη Προμηθευτή
+                </button>
+            </div>
+        </div>
+
+        <!-- Αναζήτηση και Στατιστικά -->
+        <div class="mb-4 flex flex-col md:flex-row gap-4 items-center justify-between">
+            <div class="w-full md:w-1/3">
+                <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="Αναζήτηση με Επωνυμία, ΑΦΜ, Πόλη..." 
+                       class="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500 bg-white shadow-sm text-sm">
+            </div>
+            <div class="text-sm text-gray-600 bg-white px-4 py-2 rounded-lg shadow-sm border border-gray-200">
+                Συνολικοί Προμηθευτές: <span id="providerCount" class="font-bold text-orange-600">0</span>
+            </div>
+        </div>
+
+        <!-- Πίνακας Προμηθευτών -->
+        <div class="bg-white rounded-lg shadow overflow-hidden border border-gray-200">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th onclick="sortTable(0)" class="cursor-pointer px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider hover:bg-gray-100 select-none">Επωνυμία <span id="sortIcon0" class="ml-1 text-gray-400">↕</span></th>
+                            <th onclick="sortTable(1)" class="cursor-pointer px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider hover:bg-gray-100 select-none">ΑΦΜ <span id="sortIcon1" class="ml-1 text-gray-400">↕</span></th>
+                            <th onclick="sortTable(2)" class="cursor-pointer px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider hover:bg-gray-100 select-none">Υπεύθυνος / Τηλ <span id="sortIcon2" class="ml-1 text-gray-400">↕</span></th>
+                            <th onclick="sortTable(3)" class="cursor-pointer px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider hover:bg-gray-100 select-none">Πόλη / Διεύθυνση <span id="sortIcon3" class="ml-1 text-gray-400">↕</span></th>
+                            <th class="px-6 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider select-none">Ενέργειες</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200" id="tableBody">
+                        <!-- Φορτώνεται δυναμικά -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL ΦΟΡΜΑΣ ΠΡΟΜΗΘΕΥΤΗ -->
+    <div id="providerModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-xl shadow-xl max-w-lg w-full overflow-hidden border border-gray-200">
+            <div class="bg-gray-50 px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                <h3 id="modalTitle" class="text-lg font-bold text-gray-800">Καρτέλα Προμηθευτή</h3>
+                <button onclick="toggleModal(false)" class="text-gray-400 hover:text-gray-600 text-xl font-bold">&times;</button>
+            </div>
+            <form id="providerForm" onsubmit="saveProvider(event)" class="p-6 space-y-4">
+                <input type="hidden" id="editIndex" value="-1">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="col-span-1 md:col-span-2">
+                        <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Επωνυμία Επιχείρησης *</label>
+                        <input type="text" id="formCompanyName" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 outline-none text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Υπεύθυνος Επικοινωνίας</label>
+                        <input type="text" id="formContact" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 outline-none text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-gray-600 mb-1">ΑΦΜ *</label>
+                        <input type="text" id="formVat" required pattern="[0-9]{9}" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 outline-none text-sm font-mono">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Τηλέφωνο *</label>
+                        <input type="text" id="formPhone" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 outline-none text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Πόλη *</label>
+                        <input type="text" id="formCity" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 outline-none text-sm">
+                    </div>
+                    <div class="col-span-1 md:col-span-2">
+                        <label class="block text-xs font-bold uppercase text-gray-600 mb-1">Διεύθυνση</label>
+                        <input type="text" id="formAddress" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 outline-none text-sm">
+                    </div>
+                </div>
+                <div class="pt-4 border-t flex justify-end space-x-2">
+                    <button type="button" onclick="toggleModal(false)" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm">Ακύρωση</button>
+                    <button type="submit" class="bg-orange-600 text-white px-4 py-2 rounded-lg text-sm font-bold shadow">Αποθήκευση</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let providers = [];
+        let sortDirections = { 0: false, 1: false, 2: false, 3: false };
+
+        function loadProviders() {
+            const stored = localStorage.getItem('econment_providers');
+            if (stored) {
+                providers = JSON.parse(stored);
+            }
+            renderTable(providers);
+        }
+
+        function toggleModal(show) {
+            const modal = document.getElementById('providerModal');
+            if (show) {
+                modal.classList.remove('hidden');
+            } else { 
+                modal.classList.add('hidden'); 
+                document.getElementById('providerForm').reset(); 
+                document.getElementById('editIndex').value = "-1";
+            }
+        }
+
+        function openModalForAdd() {
+            document.getElementById('modalTitle').innerText = "Προσθήκη Νέου Προμηθευτή";
+            document.getElementById('editIndex').value = "-1";
+            toggleModal(true);
+        }
+
+        function editProvider(index) {
+            document.getElementById('modalTitle').innerText = "Επεξεργασία Προμηθευτή";
+            document.getElementById('editIndex').value = index;
+            
+            const p = providers[index];
+            document.getElementById('formCompanyName').value = p.companyName;
+            document.getElementById('formContact').value = p.contact !== "—" ? p.contact : "";
+            document.getElementById('formVat').value = p.vat;
+            document.getElementById('formPhone').value = p.phone !== "—" ? p.phone : "";
+            document.getElementById('formCity').value = p.city;
+            document.getElementById('formAddress').value = p.address !== "—" ? p.address : "";
+            
+            toggleModal(true);
+        }
+
+        function saveProvider(event) {
+            event.preventDefault();
+            
+            const newProv = {
+                companyName: document.getElementById('formCompanyName').value,
+                contact: document.getElementById('formContact').value || "—",
+                vat: document.getElementById('formVat').value,
+                phone: document.getElementById('formPhone').value || "—",
+                city: document.getElementById('formCity').value,
+                address: document.getElementById('formAddress').value || "—"
+            };
+
+            const editIndex = parseInt(document.getElementById('editIndex').value);
+            
+            if (editIndex > -1) {
+                providers[editIndex] = newProv;
+            } else {
+                providers.push(newProv);
+            }
+
+            localStorage.setItem('econment_providers', JSON.stringify(providers));
+            renderTable(providers);
+            toggleModal(false);
+        }
+
+        function deleteProvider(index) {
+            const pName = providers[index].companyName;
+            if (confirm(`Είστε σίγουρος ότι θέλετε να διαγράψετε τον προμηθευτή "${pName}";`)) {
+                providers.splice(index, 1);
+                localStorage.setItem('econment_providers', JSON.stringify(providers));
+                renderTable(providers);
+            }
+        }
+
+        function renderTable(data) {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+            data.forEach((p) => {
+                const actualIndex = providers.indexOf(p);
+                tbody.innerHTML += `
+                    <tr class="hover:bg-gray-50 transition">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">${p.companyName}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-700 font-medium">${p.vat}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            <div class="font-semibold text-gray-800">${p.contact}</div>
+                            <div class="text-xs">Τηλ: ${p.phone}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            <div class="font-semibold text-gray-800">${p.city}</div>
+                            <div class="text-xs text-gray-500">${p.address}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <div class="flex justify-end space-x-2">
+                                <button onclick="editProvider(${actualIndex})" class="text-blue-600 hover:text-blue-900 font-bold bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded transition">
+                                    ✏️ Αλλαγή
+                                </button>
+                                <button onclick="deleteProvider(${actualIndex})" class="text-red-600 hover:text-red-900 font-bold bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded transition">
+                                    🗑️ Διαγραφή
+                                </button>
+                            </div>
+                        </td>
+                    </tr>`;
+            });
+            document.getElementById('providerCount').innerText = data.length;
+        }
+
+        function sortTable(columnIndex) {
+            const isDescending = sortDirections[columnIndex];
+            sortDirections[columnIndex] = !isDescending;
+            
+            [0, 1, 2, 3].forEach(idx => {
+                document.getElementById(`sortIcon${idx}`).innerText = '↕';
+                document.getElementById(`sortIcon${idx}`).className = 'ml-1 text-gray-400';
+            });
+
+            const currentIcon = document.getElementById(`sortIcon${columnIndex}`);
+            currentIcon.innerText = isDescending ? '▼' : '▲';
+            currentIcon.className = 'ml-1 text-orange-600 font-bold';
+
+            providers.sort((a, b) => {
+                let valA = columnIndex === 0 ? a.companyName : columnIndex === 1 ? a.vat : columnIndex === 2 ? a.contact : a.city;
+                let valB = columnIndex === 0 ? b.companyName : columnIndex === 1 ? b.vat : columnIndex === 2 ? b.contact : b.city;
+                return isDescending ? valB.localeCompare(valA, 'el') : valA.localeCompare(valB, 'el');
+            });
+            renderTable(providers);
+        }
+
+        function filterTable() {
+            const filter = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = providers.filter(p => 
+                p.companyName.toLowerCase().includes(filter) || 
+                p.vat.includes(filter) || 
+                p.city.toLowerCase().includes(filter) ||
+                p.contact.toLowerCase().includes(filter)
+            );
+            renderTable(filtered);
+        }
+
+        window.onload = loadProviders;
+    </script>
+</body>
+</html>
+
