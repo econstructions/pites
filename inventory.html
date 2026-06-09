@@ -1,11 +1,13 @@
+```html
 <!DOCTYPE html>
 <html lang="el">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Econment - Αποθήκη</title>
+    <title>ΕΠΩΝΥΜΙΑ ΕΠΙΧΕΙΡΗΣΗΣ - Αποθήκη</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&display=swap" rel="stylesheet">
 </head>
 <body class="bg-gray-100 font-sans leading-normal tracking-normal">
 
@@ -14,12 +16,13 @@
         <!-- Header & Navigation -->
         <div class="mb-6 bg-white p-6 rounded-lg shadow-sm flex flex-col lg:flex-row justify-between items-center gap-4 border border-gray-200">
             <div>
-                <h1 class="text-2xl font-bold text-gray-800">Econment - Κεντρική Αποθήκη</h1>
+                <h1 class="text-3xl text-gray-900 uppercase" style="font-family: 'Montserrat', sans-serif; font-weight: 900; letter-spacing: -0.05em;">ΕΠΩΝΥΜΙΑ ΕΠΙΧΕΙΡΗΣΗΣ</h1>
                 <p class="text-sm text-gray-500 mt-1">Έλεγχος Αποθεμάτων, Ορίων Ασφαλείας & Ψυκτικών Θαλάμων</p>
                 <nav class="flex flex-wrap gap-2 md:gap-4 mt-4">
-                    <a href="index.html" class="text-sm text-gray-500 hover:text-blue-600 transition font-medium">👥 Πελατολόγιο</a>
+                    <a href="customers.html" class="text-sm text-gray-500 hover:text-blue-600 transition font-medium">👥 Πελατολόγιο</a>
+                    <a href="providers.html" class="text-sm text-gray-500 hover:text-blue-600 transition font-medium">🏢 Προμηθευτές</a>
                     <a href="inventory.html" class="text-sm text-blue-600 border-b-2 border-blue-600 pb-1 font-bold">📦 Αποθήκη (Στοκ)</a>
-                    <a href="orders.html" class="text-sm text-gray-500 hover:text-blue-600 transition font-medium">🚚 Διανομές / Παραγγελίες</a>
+                    <a href="orders.html" class="text-sm text-gray-500 hover:text-blue-600 transition font-medium">🚚 Διανομές</a>
                 </nav>
             </div>
             <div>
@@ -104,12 +107,6 @@
     </div>
 
     <script>
-        const defaultProducts = [
-            { sku: "PRD-001", name: "Ψηφιακός Ελεγκτής Πάνελ", freezer: false, qty: 45, minQty: 10 },
-            { sku: "FRZ-102", name: "Ειδικό Ψυκτικό Υγρό R410A", freezer: true, qty: 3, minQty: 5 },
-            { sku: "PRD-003", name: "Καλώδιο Solar 6mm (Μέτρα)", freezer: false, qty: 250, minQty: 50 }
-        ];
-
         let products = [];
         let currentFilter = 'ALL'; 
         let sortDirections = { 0: false, 1: false, 2: false, 3: false };
@@ -117,7 +114,6 @@
         function loadInventory() {
             const stored = localStorage.getItem('econment_products');
             if (stored) { products = JSON.parse(stored); } 
-            else { products = defaultProducts; localStorage.setItem('econment_products', JSON.stringify(products)); }
             applyFiltersAndRender();
         }
 
@@ -142,7 +138,6 @@
             toggleModal(false);
         }
 
-        // ➕ / ➖ ΓΡΗΓΟΡΗ ΜΕΤΑΒΟΛΗ ΑΠΟΘΕΜΑΤΟΣ ΜΕ ΕΝΑ ΚΛΙΚ
         function adjustStock(index, direction) {
             const inputEl = document.getElementById(`adjustAmt-${index}`);
             const amount = parseInt(inputEl.value);
@@ -157,13 +152,9 @@
                 return;
             }
 
-            // Εφαρμογή μεταβολής
             products[index].qty += (direction * amount);
             localStorage.setItem('econment_products', JSON.stringify(products));
-            
-            // Επαναφορά του input στο 1
             inputEl.value = 1;
-            
             applyFiltersAndRender();
         }
 
@@ -196,7 +187,6 @@
                             ${prod.freezer ? '<span class="px-2.5 py-1 text-xs font-bold rounded-full bg-cyan-100 text-cyan-800 border border-cyan-200">❄️ ΝΑΙ</span>' : '<span class="px-2.5 py-1 text-xs rounded-full bg-gray-100 text-gray-600">Όχι</span>'}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm"><span class="${qtyClass}">${prod.qty}</span></td>
-                        <!-- Στήλη Γρήγορης Μεταβολής -->
                         <td class="px-6 py-4 whitespace-nowrap text-sm">
                             <div class="flex items-center space-x-1">
                                 <button onclick="adjustStock(${actualIndex}, -1)" class="bg-red-500 hover:bg-red-600 text-white font-extrabold px-2.5 py-1 rounded transition text-sm">-</button>
@@ -220,10 +210,7 @@
 
             [0, 1, 2, 3].forEach(idx => {
                 const icon = document.getElementById(`sortIcon${idx}`);
-                if (icon) {
-                    icon.innerText = '↕';
-                    icon.className = 'ml-1 text-gray-400';
-                }
+                if (icon) { icon.innerText = '↕'; icon.className = 'ml-1 text-gray-400'; }
             });
 
             const currentIcon = document.getElementById(`sortIcon${columnIndex}`);
@@ -249,10 +236,7 @@
                 'ALERT': document.getElementById('btnAlert')
             };
             
-            Object.values(buttons).forEach(btn => {
-                btn.className = "bg-white text-gray-600 hover:bg-gray-50 text-xs px-3 py-1.5 rounded-full font-medium border border-gray-200 shadow-sm";
-            });
-
+            Object.values(buttons).forEach(btn => { btn.className = "bg-white text-gray-600 hover:bg-gray-50 text-xs px-3 py-1.5 rounded-full font-medium border border-gray-200 shadow-sm"; });
             if (type === 'ALL') buttons['ALL'].className = "bg-gray-800 text-white text-xs px-3 py-1.5 rounded-full font-medium shadow-sm";
             if (type === 'FREEZER') buttons['FREEZER'].className = "bg-cyan-600 text-white text-xs px-3 py-1.5 rounded-full font-medium shadow-sm";
             if (type === 'ALERT') buttons['ALERT'].className = "bg-red-600 text-white text-xs px-3 py-1.5 rounded-full font-medium shadow-sm";
@@ -275,3 +259,4 @@
 </body>
 </html>
 
+```
