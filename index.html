@@ -12,9 +12,18 @@
             font-family: 'Montserrat', sans-serif;
             font-weight: 900;
         }
+        /* Εφέ δόνησης για λάθος κωδικό */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+        .shake {
+            animation: shake 0.2s ease-in-out 0s 2;
+        }
     </style>
 </head>
-<body class="bg-gray-100 font-sans min-h-screen flex flex-col items-center justify-center relative overflow-x-hidden p-4">
+<body class="bg-gray-100 font-sans min-h-screen flex flex-col items-center justify-center relative overflow-x-hidden p-4 select-none">
 
     <!-- Διακοσμητικό Φόντο -->
     <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob pointer-events-none"></div>
@@ -31,19 +40,13 @@
     <!-- Κύριο Περιεχόμενο Εισόδου -->
     <div class="z-10 flex flex-col items-center text-center p-6 max-w-2xl w-full">
         
-        <!-- Ελλειπτικός Κύκλος (Logo) - Χρήση Flex για τέλειο εσωτερικό κεντράρισμα -->
+        <!-- Ελλειπτικός Κύκλος (Logo) -->
         <div class="w-48 h-32 md:w-60 md:h-40 bg-white rounded-[50%] shadow-xl border-4 border-gray-800 flex items-center justify-center overflow-hidden mb-8 relative">
-            
-            <!-- Εικόνα Λογοτύπου (Κρυφή αρχικά, εμφανίζεται μόνο αν φορτωθεί σωστά) -->
             <img id="companyLogo" src="" alt="Λογότυπο Εταιρείας" class="absolute inset-0 w-full h-full object-cover hidden">
-            
-            <!-- Στοιχισμένο Κείμενο/Εικονίδιο (Fallback) - Τέλειο Κεντράρισμα στο κέντρο του ελλειπτικού κύκλου -->
             <div id="logoFallback" class="flex flex-col items-center justify-center text-center p-4 select-none pointer-events-none w-full h-full">
-                <!-- Εικονίδιο Εταιρείας -->
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 text-gray-400 mb-1 flex-shrink-0">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008z" />
                 </svg>
-                <!-- Κείμενο -->
                 <span class="text-xs md:text-sm font-extrabold text-gray-500 uppercase tracking-widest leading-tight">
                     ΛΟΓΟΤΥΠΟ<br>ΕΤΑΙΡΕΙΑΣ
                 </span>
@@ -57,16 +60,21 @@
         <p class="text-gray-500 font-medium tracking-wide mb-12">Σύστημα Διαχείρισης ERP</p>
 
         <!-- Κουμπί Πληκτρολογίου (Enter) -->
-        <a href="customers.html" 
+        <button id="enterBtn" 
            class="bg-gray-100 border border-gray-300 border-b-[6px] border-b-gray-400 rounded-xl px-12 py-4 font-bold text-gray-700 text-xl md:text-2xl active:border-b-0 active:translate-y-[6px] transition-all flex items-center gap-3 uppercase tracking-widest shadow-sm hover:bg-gray-50 select-none">
             ENTER <span class="text-2xl font-normal">↵</span>
-        </a>
+        </button>
 
     </div>
 
-    <!-- Modal Ρυθμίσεων -->
+    <!-- CUSTOM TOAST NOTIFICATION (Για κομψά μηνύματα σφάλματος/ενημέρωσης) -->
+    <div id="toast" class="fixed bottom-5 z-50 bg-gray-900 text-white text-sm font-semibold px-6 py-3 rounded-xl shadow-2xl transition-all duration-300 transform translate-y-20 opacity-0 pointer-events-none">
+        Ειδοποίηση!
+    </div>
+
+    <!-- MODAL ΡΥΘΜΙΣΕΩΝ -->
     <div id="settingsModal" class="fixed inset-0 bg-black/50 z-30 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-gray-100 transform transition-all">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-gray-100 transform transition-all max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-6">
                 <h3 class="text-xl font-bold text-gray-900">Ρυθμίσεις Εμφάνισης</h3>
                 <button id="closeModalBtn" class="text-gray-400 hover:text-gray-600">
@@ -86,15 +94,11 @@
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-2">Λογότυπο Εταιρείας (Επιλέξτε τρόπο)</label>
                     <div class="space-y-3">
-                        <!-- Ανέβασμα Αρχείου -->
                         <div>
                             <span class="block text-xs text-gray-500 mb-1">Ανέβασμα αρχείου εικόνας:</span>
                             <input type="file" id="logoFileInput" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer">
                         </div>
-                        
                         <div class="text-center text-xs text-gray-400 font-bold">Ή</div>
-
-                        <!-- Εισαγωγή URL -->
                         <div>
                             <span class="block text-xs text-gray-500 mb-1">Διεύθυνση URL εικόνας:</span>
                             <input type="url" id="logoUrlInput" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-gray-800 text-sm" placeholder="https://example.com/logo.png">
@@ -102,8 +106,34 @@
                     </div>
                 </div>
 
+                <!-- 3. Ασφάλεια Εισόδου (PIN & Ανάκτηση) -->
+                <div class="border-t border-gray-100 pt-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <label class="block text-sm font-bold text-gray-800">Ασφάλεια με PIN</label>
+                        <input type="checkbox" id="pinToggle" class="w-5 h-5 accent-blue-600 rounded cursor-pointer">
+                    </div>
+
+                    <!-- Πεδία PIN (Εμφανίζονται μόνο αν το checkbox είναι checked) -->
+                    <div id="pinFields" class="space-y-3 hidden transition-all">
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-xs text-gray-500 mb-1">Νέο 4ψήφιο PIN</label>
+                                <input type="password" id="inputPin1" maxlength="4" pattern="[0-9]*" inputmode="numeric" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-center font-mono tracking-widest text-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="****">
+                            </div>
+                            <div>
+                                <label class="block text-xs text-gray-500 mb-1">Επιβεβαίωση PIN</label>
+                                <input type="password" id="inputPin2" maxlength="4" pattern="[0-9]*" inputmode="numeric" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-center font-mono tracking-widest text-lg focus:ring-2 focus:ring-blue-500 focus:outline-none" placeholder="****">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-xs text-gray-500 mb-1">Φράση Ασφαλείας για Ανάκτηση (π.χ. μου αρέσει το μπλε)</label>
+                            <input type="text" id="inputRecovery" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-sm text-gray-800" placeholder="Απαντήστε με μια δική σας φράση">
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Κουμπιά Αποθήκευσης/Επαναφοράς -->
-                <div class="flex gap-2 pt-4">
+                <div class="flex gap-2 pt-2">
                     <button id="saveSettingsBtn" class="flex-1 bg-gray-950 text-white font-bold py-2.5 px-4 rounded-lg hover:bg-gray-800 transition-colors">
                         Αποθήκευση
                     </button>
@@ -115,14 +145,80 @@
         </div>
     </div>
 
-    <!-- Custom Modal Επιβεβαίωσης Επαναφοράς -->
+    <!-- MODAL ΨΗΦΙΑΚΟΥ ΠΛΗΚΤΡΟΛΟΓΙΟΥ (PIN PAD) -->
+    <div id="pinPadModal" class="fixed inset-0 bg-gray-950/95 z-40 flex flex-col items-center justify-center p-4 hidden">
+        <!-- Κουμπί Κλεισίματος -->
+        <button id="closePinPadBtn" class="absolute top-6 right-6 text-gray-400 hover:text-white p-2">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+
+        <!-- Καρτέλα PIN -->
+        <div class="max-w-xs w-full text-center flex flex-col items-center">
+            <h3 class="text-xl font-bold text-white mb-2">Απαιτείται PIN</h3>
+            <p class="text-gray-400 text-xs mb-8">Εισάγετε τον 4ψήφιο κωδικό πρόσβασης</p>
+
+            <!-- Κυκλάκια Ένδειξης PIN -->
+            <div id="pinDotsContainer" class="flex justify-center gap-6 mb-10">
+                <div class="w-4 h-4 rounded-full border-2 border-gray-600 transition-all duration-150"></div>
+                <div class="w-4 h-4 rounded-full border-2 border-gray-600 transition-all duration-150"></div>
+                <div class="w-4 h-4 rounded-full border-2 border-gray-600 transition-all duration-150"></div>
+                <div class="w-4 h-4 rounded-full border-2 border-gray-600 transition-all duration-150"></div>
+            </div>
+
+            <!-- Ψηφιακό Πληκτρολόγιο (Touch-friendly Grid) -->
+            <div class="grid grid-cols-3 gap-4 w-full mb-8">
+                <button class="pin-key bg-white/10 hover:bg-white/20 active:scale-95 text-white font-bold text-2xl h-16 w-16 rounded-full flex items-center justify-center mx-auto transition-all" data-val="1">1</button>
+                <button class="pin-key bg-white/10 hover:bg-white/20 active:scale-95 text-white font-bold text-2xl h-16 w-16 rounded-full flex items-center justify-center mx-auto transition-all" data-val="2">2</button>
+                <button class="pin-key bg-white/10 hover:bg-white/20 active:scale-95 text-white font-bold text-2xl h-16 w-16 rounded-full flex items-center justify-center mx-auto transition-all" data-val="3">3</button>
+                <button class="pin-key bg-white/10 hover:bg-white/20 active:scale-95 text-white font-bold text-2xl h-16 w-16 rounded-full flex items-center justify-center mx-auto transition-all" data-val="4">4</button>
+                <button class="pin-key bg-white/10 hover:bg-white/20 active:scale-95 text-white font-bold text-2xl h-16 w-16 rounded-full flex items-center justify-center mx-auto transition-all" data-val="5">5</button>
+                <button class="pin-key bg-white/10 hover:bg-white/20 active:scale-95 text-white font-bold text-2xl h-16 w-16 rounded-full flex items-center justify-center mx-auto transition-all" data-val="6">6</button>
+                <button class="pin-key bg-white/10 hover:bg-white/20 active:scale-95 text-white font-bold text-2xl h-16 w-16 rounded-full flex items-center justify-center mx-auto transition-all" data-val="7">7</button>
+                <button class="pin-key bg-white/10 hover:bg-white/20 active:scale-95 text-white font-bold text-2xl h-16 w-16 rounded-full flex items-center justify-center mx-auto transition-all" data-val="8">8</button>
+                <button class="pin-key bg-white/10 hover:bg-white/20 active:scale-95 text-white font-bold text-2xl h-16 w-16 rounded-full flex items-center justify-center mx-auto transition-all" data-val="9">9</button>
+                
+                <!-- Backspace / Delete -->
+                <button id="pinBackBtn" class="bg-transparent hover:bg-white/10 active:scale-95 text-gray-400 font-bold text-lg h-16 w-16 rounded-full flex items-center justify-center mx-auto transition-all">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M3 12l6.414 6.414a2 2 0 001.414.586H19a2 2 0 002-2V7a2 2 0 00-2-2h-8.172a2 2 0 00-1.414.586L3 12z"></path></svg>
+                </button>
+                <button class="pin-key bg-white/10 hover:bg-white/20 active:scale-95 text-white font-bold text-2xl h-16 w-16 rounded-full flex items-center justify-center mx-auto transition-all" data-val="0">0</button>
+                <!-- Clear -->
+                <button id="pinClearBtn" class="bg-transparent hover:bg-white/10 active:scale-95 text-gray-400 font-semibold text-xs h-16 w-16 rounded-full flex items-center justify-center mx-auto uppercase transition-all">Clear</button>
+            </div>
+
+            <!-- Επιλογή Ανάκτησης -->
+            <button id="forgotPinBtn" class="text-blue-400 hover:text-blue-300 text-sm font-semibold tracking-wide underline transition-colors">
+                Ξέχασα το PIN
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL ΑΝΑΚΤΗΣΗΣ PIN (Μέσω Φράσης Ασφαλείας) -->
+    <div id="recoveryModal" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-gray-100 text-center">
+            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+            </div>
+            <h4 class="text-lg font-bold text-gray-900 mb-1">Ανάκτηση Εισόδου</h4>
+            <p class="text-xs text-gray-500 mb-6">Εισάγετε τη Φράση Ασφαλείας που ορίσατε στις ρυθμίσεις για να παρακάμψετε το PIN.</p>
+            
+            <input type="text" id="recoveryAnswerInput" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-center focus:ring-2 focus:ring-blue-500 focus:outline-none mb-6 text-sm text-gray-800" placeholder="π.χ. μου αρέσει το μπλε">
+            
+            <div class="flex gap-2">
+                <button id="recoverySubmitBtn" class="flex-1 bg-blue-600 text-white font-semibold py-2.5 px-4 rounded-lg hover:bg-blue-700 transition-colors">Επαλήθευση</button>
+                <button id="recoveryCancelBtn" class="flex-1 bg-gray-100 text-gray-700 font-semibold py-2.5 px-4 rounded-lg hover:bg-gray-200 transition-colors">Ακύρωση</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CUSTOM MODAL ΕΠΙΒΕΒΑΙΩΣΗΣ ΕΠΑΝΑΦΟΡΑΣ -->
     <div id="confirmModal" class="fixed inset-0 bg-black/60 z-40 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-xl max-w-sm w-full p-6 shadow-2xl border border-gray-100 text-center">
             <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
             </div>
             <h4 class="text-lg font-bold text-gray-900 mb-2">Επιβεβαίωση Επαναφοράς</h4>
-            <p class="text-sm text-gray-500 mb-6">Είστε σίγουροι ότι θέλετε να επαναφέρετε την αρχική επωνυμία και το λογότυπο της εφαρμογής;</p>
+            <p class="text-sm text-gray-500 mb-6">Είστε σίγουροι ότι θέλετε να επαναφέρετε την αρχική επωνυμία, το λογότυπο και τις ρυθμίσεις ασφαλείας;</p>
             <div class="flex gap-2">
                 <button id="confirmYesBtn" class="flex-1 bg-red-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-700 transition-colors">Ναι, Επαναφορά</button>
                 <button id="confirmNoBtn" class="flex-1 bg-gray-100 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-200 transition-colors">Ακύρωση</button>
@@ -132,31 +228,72 @@
 
     <!-- Script Διαχείρισης -->
     <script>
-        // Στοιχεία DOM
+        // Στοιχεία DOM - Γενικά
         const settingsBtn = document.getElementById('settingsBtn');
         const settingsModal = document.getElementById('settingsModal');
         const closeModalBtn = document.getElementById('closeModalBtn');
-        
+        const enterBtn = document.getElementById('enterBtn');
+        const toast = document.getElementById('toast');
+
+        // Στοιχεία DOM - Επιβεβαίωση
         const confirmModal = document.getElementById('confirmModal');
         const confirmYesBtn = document.getElementById('confirmYesBtn');
         const confirmNoBtn = document.getElementById('confirmNoBtn');
 
+        // Στοιχεία DOM - Εμφάνιση Logo/Όνομα
         const companyNameEl = document.getElementById('companyName');
         const companyLogoEl = document.getElementById('companyLogo');
         const logoFallbackEl = document.getElementById('logoFallback');
 
+        // Στοιχεία DOM - Inputs Ρυθμίσεων
         const inputCompanyName = document.getElementById('inputCompanyName');
         const logoFileInput = document.getElementById('logoFileInput');
         const logoUrlInput = document.getElementById('logoUrlInput');
         
+        // Στοιχεία DOM - Inputs PIN
+        const pinToggle = document.getElementById('pinToggle');
+        const pinFields = document.getElementById('pinFields');
+        const inputPin1 = document.getElementById('inputPin1');
+        const inputPin2 = document.getElementById('inputPin2');
+        const inputRecovery = document.getElementById('inputRecovery');
+        
         const saveSettingsBtn = document.getElementById('saveSettingsBtn');
         const resetSettingsBtn = document.getElementById('resetSettingsBtn');
+
+        // Στοιχεία DOM - PIN PAD
+        const pinPadModal = document.getElementById('pinPadModal');
+        const closePinPadBtn = document.getElementById('closePinPadBtn');
+        const pinDots = document.getElementById('pinDotsContainer').children;
+        const pinKeys = document.querySelectorAll('.pin-key');
+        const pinBackBtn = document.getElementById('pinBackBtn');
+        const pinClearBtn = document.getElementById('pinClearBtn');
+        const forgotPinBtn = document.getElementById('forgotPinBtn');
+
+        // Στοιχεία DOM - Recovery
+        const recoveryModal = document.getElementById('recoveryModal');
+        const recoveryAnswerInput = document.getElementById('recoveryAnswerInput');
+        const recoverySubmitBtn = document.getElementById('recoverySubmitBtn');
+        const recoveryCancelBtn = document.getElementById('recoveryCancelBtn');
 
         // Αρχικές προεπιλεγμένες τιμές
         const DEFAULT_NAME = 'ΕΠΩΝΥΜΙΑ ΕΠΙΧΕΙΡΗΣΗΣ';
         const DEFAULT_LOGO = 'images/logo.png'; 
 
-        // Διαχείριση Φόρτωσης / Αποτυχίας εικόνας Logo
+        // State Εφαρμογής
+        let currentTypedPin = '';
+
+        // Λειτουργία Toast (Εύχρηστα μηνύματα)
+        function showToast(message, duration = 3000) {
+            toast.textContent = message;
+            toast.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
+            toast.classList.add('translate-y-0', 'opacity-100');
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
+            }, duration);
+        }
+
+        // Διαχείριση Logo
         companyLogoEl.addEventListener('load', () => {
             companyLogoEl.classList.remove('hidden');
             logoFallbackEl.classList.add('hidden');
@@ -167,7 +304,6 @@
             logoFallbackEl.classList.remove('hidden');
         });
 
-        // Συνάρτηση ενημέρωσης λογοτύπου
         function updateLogo(src) {
             if (src) {
                 companyLogoEl.src = src;
@@ -176,11 +312,22 @@
             }
         }
 
+        // Εμφάνιση/Απόκρυψη των πεδίων PIN στις ρυθμίσεις
+        pinToggle.addEventListener('change', () => {
+            if (pinToggle.checked) {
+                pinFields.classList.remove('hidden');
+            } else {
+                pinFields.classList.add('hidden');
+            }
+        });
+
         // Φόρτωση ρυθμίσεων κατά την εκκίνηση
         window.addEventListener('DOMContentLoaded', () => {
             const savedName = localStorage.getItem('erp_company_name');
             const savedLogo = localStorage.getItem('erp_company_logo');
+            const isPinEnabled = localStorage.getItem('erp_pin_enabled') === 'true';
 
+            // 1. Όνομα
             if (savedName) {
                 companyNameEl.textContent = savedName;
                 document.title = `${savedName} - Είσοδος`;
@@ -188,16 +335,38 @@
                 companyNameEl.textContent = DEFAULT_NAME;
             }
 
+            // 2. Λογότυπο
             updateLogo(savedLogo);
+
+            // 3. Κατάσταση PIN
+            pinToggle.checked = isPinEnabled;
+            if (isPinEnabled) {
+                pinFields.classList.remove('hidden');
+            }
         });
 
         // Άνοιγμα modal ρυθμίσεων
         settingsBtn.addEventListener('click', () => {
             inputCompanyName.value = companyNameEl.textContent.trim();
             const currentSavedLogo = localStorage.getItem('erp_company_logo') || '';
-            // Αν το τρέχον logo είναι base64, αφήνουμε κενό το URL
             logoUrlInput.value = currentSavedLogo.startsWith('data:') ? '' : currentSavedLogo;
             logoFileInput.value = ''; 
+
+            // Συμπλήρωση πεδίων PIN
+            const isPinEnabled = localStorage.getItem('erp_pin_enabled') === 'true';
+            pinToggle.checked = isPinEnabled;
+            if (isPinEnabled) {
+                pinFields.classList.remove('hidden');
+                const savedPin = localStorage.getItem('erp_pin_code') || '';
+                inputPin1.value = savedPin;
+                inputPin2.value = savedPin;
+                inputRecovery.value = localStorage.getItem('erp_recovery_phrase') || '';
+            } else {
+                pinFields.classList.add('hidden');
+                inputPin1.value = '';
+                inputPin2.value = '';
+                inputRecovery.value = '';
+            }
 
             settingsModal.classList.remove('hidden');
         });
@@ -207,7 +376,6 @@
             settingsModal.classList.add('hidden');
         });
 
-        // Κλείσιμο modal κάνοντας κλικ έξω από αυτό
         settingsModal.addEventListener('click', (e) => {
             if (e.target === settingsModal) {
                 settingsModal.classList.add('hidden');
@@ -218,6 +386,34 @@
         saveSettingsBtn.addEventListener('click', () => {
             const newName = inputCompanyName.value.trim() || DEFAULT_NAME;
             
+            // Έλεγχος PIN αν είναι ενεργοποιημένο
+            if (pinToggle.checked) {
+                const pin1 = inputPin1.value.trim();
+                const pin2 = inputPin2.value.trim();
+                const recovery = inputRecovery.value.trim();
+
+                if (pin1.length !== 4 || isNaN(pin1)) {
+                    showToast('⚠️ Το PIN πρέπει να είναι ακριβώς 4 ψηφία!');
+                    return;
+                }
+                if (pin1 !== pin2) {
+                    showToast('⚠️ Τα PIN δεν ταιριάζουν! Δοκιμάστε ξανά.');
+                    return;
+                }
+                if (recovery === '') {
+                    showToast('⚠️ Παρακαλούμε εισάγετε μια φράση ασφαλείας ανάκτησης.');
+                    return;
+                }
+
+                // Αποθήκευση στοιχείων ασφαλείας
+                localStorage.setItem('erp_pin_enabled', 'true');
+                localStorage.setItem('erp_pin_code', pin1);
+                localStorage.setItem('erp_recovery_phrase', recovery);
+            } else {
+                // Απενεργοποίηση PIN
+                localStorage.setItem('erp_pin_enabled', 'false');
+            }
+
             // Αποθήκευση ονόματος
             companyNameEl.textContent = newName;
             document.title = `${newName} - Είσοδος`;
@@ -242,6 +438,7 @@
                 updateLogo(null);
             }
 
+            showToast('✅ Οι αλλαγές αποθηκεύτηκαν επιτυχώς!');
             settingsModal.classList.add('hidden');
         });
 
@@ -254,22 +451,174 @@
         confirmYesBtn.addEventListener('click', () => {
             localStorage.removeItem('erp_company_name');
             localStorage.removeItem('erp_company_logo');
+            localStorage.removeItem('erp_pin_enabled');
+            localStorage.removeItem('erp_pin_code');
+            localStorage.removeItem('erp_recovery_phrase');
             
             companyNameEl.textContent = DEFAULT_NAME;
             document.title = `${DEFAULT_NAME} - Είσοδος`;
             updateLogo(null);
 
+            pinToggle.checked = false;
+            pinFields.classList.add('hidden');
+            inputPin1.value = '';
+            inputPin2.value = '';
+            inputRecovery.value = '';
+
             confirmModal.classList.add('hidden');
             settingsModal.classList.add('hidden');
+            showToast('🔄 Έγινε επαναφορά στις εργοστασιακές ρυθμίσεις.');
         });
 
         // Ακύρωση Επαναφοράς (Όχι)
         confirmNoBtn.addEventListener('click', () => {
             confirmModal.classList.add('hidden');
         });
+
+
+        /* =======================================================
+           ΛΕΙΤΟΥΡΓΙΑ ΕΙΣΟΔΟΥ & ΨΗΦΙΑΚΟΥ ΠΛΗΚΤΡΟΛΟΓΙΟΥ (PIN)
+           ======================================================= */
+
+        // Event πατήματος στο ENTER
+        enterBtn.addEventListener('click', () => {
+            const isPinEnabled = localStorage.getItem('erp_pin_enabled') === 'true';
+
+            if (isPinEnabled) {
+                // Άνοιγμα PIN Pad
+                currentTypedPin = '';
+                updatePinDots();
+                pinPadModal.classList.remove('hidden');
+            } else {
+                // Ελεύθερη είσοδος
+                window.location.href = 'customers.html';
+            }
+        });
+
+        // Κλείσιμο PIN Pad
+        closePinPadBtn.addEventListener('click', () => {
+            pinPadModal.classList.add('hidden');
+        });
+
+        // Ενημέρωση των Dots του PIN
+        function updatePinDots() {
+            const dotsContainer = document.getElementById('pinDotsContainer');
+            dotsContainer.classList.remove('shake'); // Καθαρισμός εφέ δόνησης
+
+            for (let i = 0; i < pinDots.length; i++) {
+                if (i < currentTypedPin.length) {
+                    // Συμπληρωμένο Dot
+                    pinDots[i].classList.remove('border-gray-600', 'bg-transparent');
+                    pinDots[i].classList.add('border-blue-500', 'bg-blue-500', 'scale-110');
+                } else {
+                    // Άδειο Dot
+                    pinDots[i].classList.remove('border-blue-500', 'bg-blue-500', 'scale-110');
+                    pinDots[i].classList.add('border-gray-600', 'bg-transparent');
+                }
+            }
+        }
+
+        // Εφέ δόνησης (shake) και αλλαγή χρώματος σε κόκκινο σε περίπτωση σφάλματος
+        function triggerErrorOnDots() {
+            const dotsContainer = document.getElementById('pinDotsContainer');
+            dotsContainer.classList.add('shake');
+            
+            for (let i = 0; i < pinDots.length; i++) {
+                pinDots[i].classList.remove('border-blue-500', 'bg-blue-500');
+                pinDots[i].classList.add('border-red-500', 'bg-red-500');
+            }
+
+            setTimeout(() => {
+                currentTypedPin = '';
+                updatePinDots();
+            }, 600);
+        }
+
+        // Πατήματα πλήκτρων στο εικονικό πληκτρολόγιο
+        pinKeys.forEach(key => {
+            key.addEventListener('click', () => {
+                if (currentTypedPin.length < 4) {
+                    currentTypedPin += key.getAttribute('data-val');
+                    updatePinDots();
+
+                    // Αν συμπληρωθούν 4 ψηφία, γίνεται αυτόματα ο έλεγχος
+                    if (currentTypedPin.length === 4) {
+                        const correctPin = localStorage.getItem('erp_pin_code');
+                        
+                        setTimeout(() => {
+                            if (currentTypedPin === correctPin) {
+                                // Επιτυχής Είσοδος
+                                pinPadModal.classList.add('hidden');
+                                showToast('🔓 Επιτυχής είσοδος!');
+                                setTimeout(() => {
+                                    window.location.href = 'customers.html';
+                                }, 500);
+                            } else {
+                                // Λάθος κωδικός
+                                triggerErrorOnDots();
+                                showToast('❌ Λάθος PIN! Δοκιμάστε ξανά.');
+                            }
+                        }, 250);
+                    }
+                }
+            });
+        });
+
+        // Κουμπί Clear (Καθαρισμός)
+        pinClearBtn.addEventListener('click', () => {
+            currentTypedPin = '';
+            updatePinDots();
+        });
+
+        // Κουμπί Backspace (Διαγραφή τελευταίου ψηφίου)
+        pinBackBtn.addEventListener('click', () => {
+            if (currentTypedPin.length > 0) {
+                currentTypedPin = currentTypedPin.slice(0, -1);
+                updatePinDots();
+            }
+        });
+
+
+        /* =======================================================
+           ΛΕΙΤΟΥΡΓΙΑ ΑΝΑΚΤΗΣΗΣ (FORGOT PIN)
+           ======================================================= */
+
+        // Κλικ στο "Ξέχασα το PIN"
+        forgotPinBtn.addEventListener('click', () => {
+            pinPadModal.classList.add('hidden');
+            recoveryAnswerInput.value = '';
+            recoveryModal.classList.remove('hidden');
+        });
+
+        // Κλείσιμο Ανάκτησης (Ακύρωση)
+        recoveryCancelBtn.addEventListener('click', () => {
+            recoveryModal.classList.add('hidden');
+            pinPadModal.classList.remove('hidden'); // Επιστροφή στο pin pad
+        });
+
+        // Υποβολή Φράσης Ασφαλείας
+        recoverySubmitBtn.addEventListener('click', () => {
+            const inputVal = recoveryAnswerInput.value.trim().toLowerCase();
+            const savedRecovery = (localStorage.getItem('erp_recovery_phrase') || '').trim().toLowerCase();
+
+            if (inputVal === '') {
+                showToast('⚠️ Εισάγετε τη φράση ασφαλείας σας.');
+                return;
+            }
+
+            if (inputVal === savedRecovery) {
+                // Παράκαμψη και είσοδος!
+                recoveryModal.classList.add('hidden');
+                showToast('🔓 Η φράση ασφαλείας είναι σωστή! Είσοδος...');
+                setTimeout(() => {
+                    window.location.href = 'customers.html';
+                }, 1000);
+            } else {
+                showToast('❌ Λάθος φράση ασφαλείας! Δοκιμάστε ξανά.');
+            }
+        });
     </script>
 
 </body>
 </html>
-
 
