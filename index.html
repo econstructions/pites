@@ -6,7 +6,7 @@
     <title>Σύστημα Διαχείρισης ERP - Είσοδος</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght=900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&display=swap" rel="stylesheet">
     <style>
         .font-extrabold-custom {
             font-family: 'Montserrat', sans-serif;
@@ -197,7 +197,7 @@
                 <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
             </div>
             <h4 class="text-lg font-bold text-gray-900 mb-1">Ανάκτηση Εισόδου</h4>
-            <p class="text-xs text-gray-500 mb-6">Εισάγετε τη Φράση Ασφαλείας που ορίσατε στις ρυθμίσεις για να παρακάμψετε το PIN.</p>
+            <p class="text-xs text-gray-500 mb-6">Εισάγετε τη Φράση Ασφαλείας που ορίσατε στις ρυθμίσεις για να αποκτήσετε πρόσβαση στις ρυθμίσεις και να αλλάξετε το PIN.</p>
             
             <input type="text" id="recoveryAnswerInput" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-center focus:ring-2 focus:ring-blue-500 focus:outline-none mb-6 text-sm text-gray-800" placeholder="π.χ. μου αρέσει το μπλε">
             
@@ -642,20 +642,14 @@
             }
 
             if (inputVal === savedRecovery) {
-                // Παράκαμψη και είσοδος!
+                // Η φράση είναι σωστή! 
+                // Κλείνουμε το modal ανάκτησης και ανοίγουμε ΠΑΝΤΑ τις ρυθμίσεις
                 recoveryModal.classList.add('hidden');
                 
-                if (pinContext === 'settings') {
-                    showToast('🔓 Η φράση ασφαλείας είναι σωστή! Άνοιγμα ρυθμίσεων...');
-                    setTimeout(() => {
-                        openSettingsModalDirectly();
-                    }, 500);
-                } else {
-                    showToast('🔓 Η φράση ασφαλείας είναι σωστή! Είσοδος...');
-                    setTimeout(() => {
-                        window.location.href = 'customers.html';
-                    }, 1000);
-                }
+                showToast('🔓 Σωστή φράση! Άνοιγμα ρυθμίσεων για αλλαγή PIN...');
+                setTimeout(() => {
+                    openSettingsModalDirectly();
+                }, 500);
             } else {
                 showToast('❌ Λάθος φράση ασφαλείας! Δοκιμάστε ξανά.');
             }
@@ -664,4 +658,5 @@
 
 </body>
 </html>
+
 
