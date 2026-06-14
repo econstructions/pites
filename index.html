@@ -31,17 +31,19 @@
     <!-- Κύριο Περιεχόμενο Εισόδου -->
     <div class="z-10 flex flex-col items-center text-center p-6 max-w-2xl w-full">
         
-        <!-- Ελλειπτικός Κύκλος (Logo) -->
+        <!-- Ελλειπτικός Κύκλος (Logo) - Χρήση Flex για τέλειο εσωτερικό κεντράρισμα -->
         <div class="w-48 h-32 md:w-60 md:h-40 bg-white rounded-[50%] shadow-xl border-4 border-gray-800 flex items-center justify-center overflow-hidden mb-8 relative">
             
             <!-- Εικόνα Λογοτύπου (Κρυφή αρχικά, εμφανίζεται μόνο αν φορτωθεί σωστά) -->
             <img id="companyLogo" src="" alt="Λογότυπο Εταιρείας" class="absolute inset-0 w-full h-full object-cover hidden">
             
-            <!-- Στοιχισμένο Κείμενο/Εικονίδιο (Fallback) -->
-            <div id="logoFallback" class="flex flex-col items-center justify-center text-center p-4 select-none pointer-events-none">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 text-gray-400 mb-1">
+            <!-- Στοιχισμένο Κείμενο/Εικονίδιο (Fallback) - Τέλειο Κεντράρισμα στο κέντρο του ελλειπτικού κύκλου -->
+            <div id="logoFallback" class="flex flex-col items-center justify-center text-center p-4 select-none pointer-events-none w-full h-full">
+                <!-- Εικονίδιο Εταιρείας -->
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 text-gray-400 mb-1 flex-shrink-0">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008z" />
                 </svg>
+                <!-- Κείμενο -->
                 <span class="text-xs md:text-sm font-extrabold text-gray-500 uppercase tracking-widest leading-tight">
                     ΛΟΓΟΤΥΠΟ<br>ΕΤΑΙΡΕΙΑΣ
                 </span>
@@ -152,7 +154,7 @@
 
         // Αρχικές προεπιλεγμένες τιμές
         const DEFAULT_NAME = 'ΕΠΩΝΥΜΙΑ ΕΠΙΧΕΙΡΗΣΗΣ';
-        const DEFAULT_LOGO = 'images/logo.png'; // Αυτό θα προσπαθήσει να φορτώσει, αλλιώς θα δείξει το Fallback
+        const DEFAULT_LOGO = 'images/logo.png'; 
 
         // Διαχείριση Φόρτωσης / Αποτυχίας εικόνας Logo
         companyLogoEl.addEventListener('load', () => {
@@ -193,7 +195,7 @@
         settingsBtn.addEventListener('click', () => {
             inputCompanyName.value = companyNameEl.textContent.trim();
             const currentSavedLogo = localStorage.getItem('erp_company_logo') || '';
-            // Αν το τρέχον logo είναι base64 (ανεβασμένο αρχείο), δεν γεμίζουμε το URL input
+            // Αν το τρέχον logo είναι base64, αφήνουμε κενό το URL
             logoUrlInput.value = currentSavedLogo.startsWith('data:') ? '' : currentSavedLogo;
             logoFileInput.value = ''; 
 
@@ -237,7 +239,6 @@
                 updateLogo(urlVal);
                 localStorage.setItem('erp_company_logo', urlVal);
             } else if (!urlVal && !file && !localStorage.getItem('erp_company_logo')) {
-                // Αν δεν έχει επιλεγεί τίποτα και δεν υπήρχε ήδη αποθηκευμένο
                 updateLogo(null);
             }
 
