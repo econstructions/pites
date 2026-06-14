@@ -6,7 +6,7 @@
     <title>Σύστημα Διαχείρισης ERP - Είσοδος</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght=900&display=swap" rel="stylesheet">
     <style>
         .font-extrabold-custom {
             font-family: 'Montserrat', sans-serif;
@@ -53,7 +53,7 @@
             </div>
         </div>
 
-        <!-- Επωνυμία (Σοβαρή, Extra Bold) -->
+        <!-- Επωνυμία -->
         <h1 id="companyName" class="font-extrabold-custom text-4xl md:text-6xl text-gray-900 tracking-tighter mb-2 uppercase drop-shadow-sm break-words w-full">
             ΕΠΩΝΥΜΙΑ ΕΠΙΧΕΙΡΗΣΗΣ
         </h1>
@@ -67,7 +67,7 @@
 
     </div>
 
-    <!-- CUSTOM TOAST NOTIFICATION (Για κομψά μηνύματα σφάλματος/ενημέρωσης) -->
+    <!-- CUSTOM TOAST NOTIFICATION -->
     <div id="toast" class="fixed bottom-5 z-50 bg-gray-900 text-white text-sm font-semibold px-6 py-3 rounded-xl shadow-2xl transition-all duration-300 transform translate-y-20 opacity-0 pointer-events-none">
         Ειδοποίηση!
     </div>
@@ -90,7 +90,7 @@
                     <input type="text" id="inputCompanyName" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-gray-800" placeholder="Εισάγετε όνομα εταιρείας">
                 </div>
 
-                <!-- 2. Λογότυπο (Επιλογή) -->
+                <!-- 2. Λογότυπο -->
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-2">Λογότυπο Εταιρείας (Επιλέξτε τρόπο)</label>
                     <div class="space-y-3">
@@ -113,7 +113,6 @@
                         <input type="checkbox" id="pinToggle" class="w-5 h-5 accent-blue-600 rounded cursor-pointer">
                     </div>
 
-                    <!-- Πεδία PIN (Εμφανίζονται μόνο αν το checkbox είναι checked) -->
                     <div id="pinFields" class="space-y-3 hidden transition-all">
                         <div class="grid grid-cols-2 gap-2">
                             <div>
@@ -152,10 +151,10 @@
             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
         </button>
 
-        <!-- Καρτέλα PIN -->
         <div class="max-w-xs w-full text-center flex flex-col items-center">
-            <h3 class="text-xl font-bold text-white mb-2">Απαιτείται PIN</h3>
-            <p class="text-gray-400 text-xs mb-8">Εισάγετε τον 4ψήφιο κωδικό πρόσβασης</p>
+            <!-- Δυναμικός Τίτλος & Υπότιτλος ανάλογα με το Context -->
+            <h3 id="pinPadTitle" class="text-xl font-bold text-white mb-2">Απαιτείται PIN</h3>
+            <p id="pinPadSubtitle" class="text-gray-400 text-xs mb-8">Εισάγετε τον 4ψήφιο κωδικό πρόσβασης</p>
 
             <!-- Κυκλάκια Ένδειξης PIN -->
             <div id="pinDotsContainer" class="flex justify-center gap-6 mb-10">
@@ -165,7 +164,7 @@
                 <div class="w-4 h-4 rounded-full border-2 border-gray-600 transition-all duration-150"></div>
             </div>
 
-            <!-- Ψηφιακό Πληκτρολόγιο (Touch-friendly Grid) -->
+            <!-- Ψηφιακό Πληκτρολόγιο -->
             <div class="grid grid-cols-3 gap-4 w-full mb-8">
                 <button class="pin-key bg-white/10 hover:bg-white/20 active:scale-95 text-white font-bold text-2xl h-16 w-16 rounded-full flex items-center justify-center mx-auto transition-all" data-val="1">1</button>
                 <button class="pin-key bg-white/10 hover:bg-white/20 active:scale-95 text-white font-bold text-2xl h-16 w-16 rounded-full flex items-center justify-center mx-auto transition-all" data-val="2">2</button>
@@ -177,12 +176,10 @@
                 <button class="pin-key bg-white/10 hover:bg-white/20 active:scale-95 text-white font-bold text-2xl h-16 w-16 rounded-full flex items-center justify-center mx-auto transition-all" data-val="8">8</button>
                 <button class="pin-key bg-white/10 hover:bg-white/20 active:scale-95 text-white font-bold text-2xl h-16 w-16 rounded-full flex items-center justify-center mx-auto transition-all" data-val="9">9</button>
                 
-                <!-- Backspace / Delete -->
                 <button id="pinBackBtn" class="bg-transparent hover:bg-white/10 active:scale-95 text-gray-400 font-bold text-lg h-16 w-16 rounded-full flex items-center justify-center mx-auto transition-all">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M3 12l6.414 6.414a2 2 0 001.414.586H19a2 2 0 002-2V7a2 2 0 00-2-2h-8.172a2 2 0 00-1.414.586L3 12z"></path></svg>
                 </button>
                 <button class="pin-key bg-white/10 hover:bg-white/20 active:scale-95 text-white font-bold text-2xl h-16 w-16 rounded-full flex items-center justify-center mx-auto transition-all" data-val="0">0</button>
-                <!-- Clear -->
                 <button id="pinClearBtn" class="bg-transparent hover:bg-white/10 active:scale-95 text-gray-400 font-semibold text-xs h-16 w-16 rounded-full flex items-center justify-center mx-auto uppercase transition-all">Clear</button>
             </div>
 
@@ -263,6 +260,8 @@
         // Στοιχεία DOM - PIN PAD
         const pinPadModal = document.getElementById('pinPadModal');
         const closePinPadBtn = document.getElementById('closePinPadBtn');
+        const pinPadTitle = document.getElementById('pinPadTitle');
+        const pinPadSubtitle = document.getElementById('pinPadSubtitle');
         const pinDots = document.getElementById('pinDotsContainer').children;
         const pinKeys = document.querySelectorAll('.pin-key');
         const pinBackBtn = document.getElementById('pinBackBtn');
@@ -281,6 +280,7 @@
 
         // State Εφαρμογής
         let currentTypedPin = '';
+        let pinContext = 'enter'; // 'enter' για είσοδο στο ERP, 'settings' για άνοιγμα των ρυθμίσεων
 
         // Λειτουργία Toast (Εύχρηστα μηνύματα)
         function showToast(message, duration = 3000) {
@@ -345,8 +345,8 @@
             }
         });
 
-        // Άνοιγμα modal ρυθμίσεων
-        settingsBtn.addEventListener('click', () => {
+        // Άνοιγμα modal ρυθμίσεων (Απευθείας, αφού περάσει ο έλεγχος PIN)
+        function openSettingsModalDirectly() {
             inputCompanyName.value = companyNameEl.textContent.trim();
             const currentSavedLogo = localStorage.getItem('erp_company_logo') || '';
             logoUrlInput.value = currentSavedLogo.startsWith('data:') ? '' : currentSavedLogo;
@@ -369,6 +369,27 @@
             }
 
             settingsModal.classList.remove('hidden');
+        }
+
+        // Event πατήματος στο γρανάζι ρυθμίσεων
+        settingsBtn.addEventListener('click', () => {
+            const isPinEnabled = localStorage.getItem('erp_pin_enabled') === 'true';
+
+            if (isPinEnabled) {
+                // Ζητάμε PIN για την είσοδο στις Ρυθμίσεις
+                pinContext = 'settings';
+                currentTypedPin = '';
+                updatePinDots();
+                
+                // Προσαρμογή κειμένων PIN Pad για ασφάλεια
+                pinPadTitle.textContent = 'Κλείδωμα Ρυθμίσεων';
+                pinPadSubtitle.textContent = 'Εισάγετε το PIN για πρόσβαση στις ρυθμίσεις';
+                
+                pinPadModal.classList.remove('hidden');
+            } else {
+                // Αν δεν υπάρχει PIN, ανοίγει απευθείας
+                openSettingsModalDirectly();
+            }
         });
 
         // Κλείσιμο modal ρυθμίσεων
@@ -412,6 +433,8 @@
             } else {
                 // Απενεργοποίηση PIN
                 localStorage.setItem('erp_pin_enabled', 'false');
+                localStorage.removeItem('erp_pin_code');
+                localStorage.removeItem('erp_recovery_phrase');
             }
 
             // Αποθήκευση ονόματος
@@ -485,9 +508,15 @@
             const isPinEnabled = localStorage.getItem('erp_pin_enabled') === 'true';
 
             if (isPinEnabled) {
-                // Άνοιγμα PIN Pad
+                // Άνοιγμα PIN Pad για σύνδεση
+                pinContext = 'enter';
                 currentTypedPin = '';
                 updatePinDots();
+
+                // Προσαρμογή κειμένων PIN Pad για σύνδεση
+                pinPadTitle.textContent = 'Απαιτείται PIN';
+                pinPadSubtitle.textContent = 'Εισάγετε τον 4ψήφιο κωδικό πρόσβασης';
+
                 pinPadModal.classList.remove('hidden');
             } else {
                 // Ελεύθερη είσοδος
@@ -503,22 +532,20 @@
         // Ενημέρωση των Dots του PIN
         function updatePinDots() {
             const dotsContainer = document.getElementById('pinDotsContainer');
-            dotsContainer.classList.remove('shake'); // Καθαρισμός εφέ δόνησης
+            dotsContainer.classList.remove('shake'); 
 
             for (let i = 0; i < pinDots.length; i++) {
                 if (i < currentTypedPin.length) {
-                    // Συμπληρωμένο Dot
                     pinDots[i].classList.remove('border-gray-600', 'bg-transparent');
                     pinDots[i].classList.add('border-blue-500', 'bg-blue-500', 'scale-110');
                 } else {
-                    // Άδειο Dot
                     pinDots[i].classList.remove('border-blue-500', 'bg-blue-500', 'scale-110');
                     pinDots[i].classList.add('border-gray-600', 'bg-transparent');
                 }
             }
         }
 
-        // Εφέ δόνησης (shake) και αλλαγή χρώματος σε κόκκινο σε περίπτωση σφάλματος
+        // Εφέ δόνησης σε περίπτωση λάθους PIN
         function triggerErrorOnDots() {
             const dotsContainer = document.getElementById('pinDotsContainer');
             dotsContainer.classList.add('shake');
@@ -547,12 +574,20 @@
                         
                         setTimeout(() => {
                             if (currentTypedPin === correctPin) {
-                                // Επιτυχής Είσοδος
+                                // Επιτυχές PIN
                                 pinPadModal.classList.add('hidden');
-                                showToast('🔓 Επιτυχής είσοδος!');
-                                setTimeout(() => {
-                                    window.location.href = 'customers.html';
-                                }, 500);
+                                
+                                if (pinContext === 'settings') {
+                                    // Αν ο χρήστης ήθελε τις ρυθμίσεις
+                                    showToast('🔓 Πρόσβαση στις ρυθμίσεις επετράπη.');
+                                    openSettingsModalDirectly();
+                                } else {
+                                    // Αν ο χρήστης ήθελε να μπει στο ERP
+                                    showToast('🔓 Επιτυχής είσοδος!');
+                                    setTimeout(() => {
+                                        window.location.href = 'customers.html';
+                                    }, 500);
+                                }
                             } else {
                                 // Λάθος κωδικός
                                 triggerErrorOnDots();
@@ -564,13 +599,13 @@
             });
         });
 
-        // Κουμπί Clear (Καθαρισμός)
+        // Κουμπί Clear
         pinClearBtn.addEventListener('click', () => {
             currentTypedPin = '';
             updatePinDots();
         });
 
-        // Κουμπί Backspace (Διαγραφή τελευταίου ψηφίου)
+        // Κουμπί Backspace
         pinBackBtn.addEventListener('click', () => {
             if (currentTypedPin.length > 0) {
                 currentTypedPin = currentTypedPin.slice(0, -1);
@@ -609,10 +644,18 @@
             if (inputVal === savedRecovery) {
                 // Παράκαμψη και είσοδος!
                 recoveryModal.classList.add('hidden');
-                showToast('🔓 Η φράση ασφαλείας είναι σωστή! Είσοδος...');
-                setTimeout(() => {
-                    window.location.href = 'customers.html';
-                }, 1000);
+                
+                if (pinContext === 'settings') {
+                    showToast('🔓 Η φράση ασφαλείας είναι σωστή! Άνοιγμα ρυθμίσεων...');
+                    setTimeout(() => {
+                        openSettingsModalDirectly();
+                    }, 500);
+                } else {
+                    showToast('🔓 Η φράση ασφαλείας είναι σωστή! Είσοδος...');
+                    setTimeout(() => {
+                        window.location.href = 'customers.html';
+                    }, 1000);
+                }
             } else {
                 showToast('❌ Λάθος φράση ασφαλείας! Δοκιμάστε ξανά.');
             }
