@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ΕΠΩΝΥΜΙΑ ΕΠΙΧΕΙΡΗΣΗΣ - Είσοδος</title>
+    <title>Σύστημα Διαχείρισης ERP - Είσοδος</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&display=swap" rel="stylesheet">
@@ -14,23 +14,42 @@
         }
     </style>
 </head>
-<body class="bg-gray-100 font-sans h-screen flex flex-col items-center justify-center relative overflow-hidden">
+<body class="bg-gray-100 font-sans min-h-screen flex flex-col items-center justify-center relative overflow-x-hidden p-4">
 
     <!-- Διακοσμητικό Φόντο -->
-    <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob"></div>
-    <div class="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-indigo-200 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-2000"></div>
+    <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob pointer-events-none"></div>
+    <div class="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-indigo-200 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-blob animation-delay-2000 pointer-events-none"></div>
 
-    <div class="z-10 flex flex-col items-center text-center p-6">
+    <!-- Κουμπί Ρυθμίσεων (Επάνω Δεξιά) -->
+    <button id="settingsBtn" class="absolute top-4 right-4 z-20 bg-white hover:bg-gray-50 text-gray-700 p-3 rounded-full shadow-md border border-gray-200 transition-all flex items-center justify-center" title="Ρυθμίσεις Εμφάνισης">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.43l-1.003.828c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.43l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+        </svg>
+    </button>
+
+    <!-- Κύριο Περιεχόμενο Εισόδου -->
+    <div class="z-10 flex flex-col items-center text-center p-6 max-w-2xl w-full">
         
-        <!-- Οβάλ Logo -->
-        <div class="w-40 h-28 md:w-56 md:h-36 bg-white rounded-[50%] shadow-xl border-4 border-gray-800 flex items-center justify-center overflow-hidden mb-8">
-            <!-- Αντικαταστήστε το src με το πραγματικό logo, π.χ. 'images/logo.png' -->
-            <img src="images/logo.png" alt="Company Logo" class="w-full h-full object-cover" 
-                 onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%234B5563\' stroke-width=\'1.5\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' d=\'M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008z\'/></svg>'">
+        <!-- Ελλειπτικός Κύκλος (Logo) -->
+        <div class="w-48 h-32 md:w-60 md:h-40 bg-white rounded-[50%] shadow-xl border-4 border-gray-800 flex items-center justify-center overflow-hidden mb-8 relative">
+            
+            <!-- Εικόνα Λογοτύπου (Κρυφή αρχικά, εμφανίζεται μόνο αν φορτωθεί σωστά) -->
+            <img id="companyLogo" src="" alt="Λογότυπο Εταιρείας" class="absolute inset-0 w-full h-full object-cover hidden">
+            
+            <!-- Στοιχισμένο Κείμενο/Εικονίδιο (Fallback) -->
+            <div id="logoFallback" class="flex flex-col items-center justify-center text-center p-4 select-none pointer-events-none">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 text-gray-400 mb-1">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008z" />
+                </svg>
+                <span class="text-xs md:text-sm font-extrabold text-gray-500 uppercase tracking-widest leading-tight">
+                    ΛΟΓΟΤΥΠΟ<br>ΕΤΑΙΡΕΙΑΣ
+                </span>
+            </div>
         </div>
 
         <!-- Επωνυμία (Σοβαρή, Extra Bold) -->
-        <h1 class="font-extrabold-custom text-4xl md:text-6xl text-gray-900 tracking-tighter mb-2 uppercase drop-shadow-sm">
+        <h1 id="companyName" class="font-extrabold-custom text-4xl md:text-6xl text-gray-900 tracking-tighter mb-2 uppercase drop-shadow-sm break-words w-full">
             ΕΠΩΝΥΜΙΑ ΕΠΙΧΕΙΡΗΣΗΣ
         </h1>
         <p class="text-gray-500 font-medium tracking-wide mb-12">Σύστημα Διαχείρισης ERP</p>
@@ -42,6 +61,212 @@
         </a>
 
     </div>
+
+    <!-- Modal Ρυθμίσεων -->
+    <div id="settingsModal" class="fixed inset-0 bg-black/50 z-30 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-gray-100 transform transition-all">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-gray-900">Ρυθμίσεις Εμφάνισης</h3>
+                <button id="closeModalBtn" class="text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+
+            <!-- Φόρμα Ρυθμίσεων -->
+            <div class="space-y-5">
+                <!-- 1. Όνομα Εταιρείας -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Όνομα Εταιρείας</label>
+                    <input type="text" id="inputCompanyName" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-gray-800" placeholder="Εισάγετε όνομα εταιρείας">
+                </div>
+
+                <!-- 2. Λογότυπο (Επιλογή) -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Λογότυπο Εταιρείας (Επιλέξτε τρόπο)</label>
+                    <div class="space-y-3">
+                        <!-- Ανέβασμα Αρχείου -->
+                        <div>
+                            <span class="block text-xs text-gray-500 mb-1">Ανέβασμα αρχείου εικόνας:</span>
+                            <input type="file" id="logoFileInput" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer">
+                        </div>
+                        
+                        <div class="text-center text-xs text-gray-400 font-bold">Ή</div>
+
+                        <!-- Εισαγωγή URL -->
+                        <div>
+                            <span class="block text-xs text-gray-500 mb-1">Διεύθυνση URL εικόνας:</span>
+                            <input type="url" id="logoUrlInput" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-gray-800 text-sm" placeholder="https://example.com/logo.png">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Κουμπιά Αποθήκευσης/Επαναφοράς -->
+                <div class="flex gap-2 pt-4">
+                    <button id="saveSettingsBtn" class="flex-1 bg-gray-950 text-white font-bold py-2.5 px-4 rounded-lg hover:bg-gray-800 transition-colors">
+                        Αποθήκευση
+                    </button>
+                    <button id="resetSettingsBtn" class="bg-gray-100 text-gray-600 font-semibold py-2.5 px-4 rounded-lg hover:bg-gray-200 transition-colors" title="Επαναφορά στα αρχικά">
+                        Επαναφορά
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Modal Επιβεβαίωσης Επαναφοράς -->
+    <div id="confirmModal" class="fixed inset-0 bg-black/60 z-40 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-xl max-w-sm w-full p-6 shadow-2xl border border-gray-100 text-center">
+            <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+            </div>
+            <h4 class="text-lg font-bold text-gray-900 mb-2">Επιβεβαίωση Επαναφοράς</h4>
+            <p class="text-sm text-gray-500 mb-6">Είστε σίγουροι ότι θέλετε να επαναφέρετε την αρχική επωνυμία και το λογότυπο της εφαρμογής;</p>
+            <div class="flex gap-2">
+                <button id="confirmYesBtn" class="flex-1 bg-red-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-700 transition-colors">Ναι, Επαναφορά</button>
+                <button id="confirmNoBtn" class="flex-1 bg-gray-100 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-200 transition-colors">Ακύρωση</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script Διαχείρισης -->
+    <script>
+        // Στοιχεία DOM
+        const settingsBtn = document.getElementById('settingsBtn');
+        const settingsModal = document.getElementById('settingsModal');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        
+        const confirmModal = document.getElementById('confirmModal');
+        const confirmYesBtn = document.getElementById('confirmYesBtn');
+        const confirmNoBtn = document.getElementById('confirmNoBtn');
+
+        const companyNameEl = document.getElementById('companyName');
+        const companyLogoEl = document.getElementById('companyLogo');
+        const logoFallbackEl = document.getElementById('logoFallback');
+
+        const inputCompanyName = document.getElementById('inputCompanyName');
+        const logoFileInput = document.getElementById('logoFileInput');
+        const logoUrlInput = document.getElementById('logoUrlInput');
+        
+        const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+        const resetSettingsBtn = document.getElementById('resetSettingsBtn');
+
+        // Αρχικές προεπιλεγμένες τιμές
+        const DEFAULT_NAME = 'ΕΠΩΝΥΜΙΑ ΕΠΙΧΕΙΡΗΣΗΣ';
+        const DEFAULT_LOGO = 'images/logo.png'; // Αυτό θα προσπαθήσει να φορτώσει, αλλιώς θα δείξει το Fallback
+
+        // Διαχείριση Φόρτωσης / Αποτυχίας εικόνας Logo
+        companyLogoEl.addEventListener('load', () => {
+            companyLogoEl.classList.remove('hidden');
+            logoFallbackEl.classList.add('hidden');
+        });
+
+        companyLogoEl.addEventListener('error', () => {
+            companyLogoEl.classList.add('hidden');
+            logoFallbackEl.classList.remove('hidden');
+        });
+
+        // Συνάρτηση ενημέρωσης λογοτύπου
+        function updateLogo(src) {
+            if (src) {
+                companyLogoEl.src = src;
+            } else {
+                companyLogoEl.src = DEFAULT_LOGO;
+            }
+        }
+
+        // Φόρτωση ρυθμίσεων κατά την εκκίνηση
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedName = localStorage.getItem('erp_company_name');
+            const savedLogo = localStorage.getItem('erp_company_logo');
+
+            if (savedName) {
+                companyNameEl.textContent = savedName;
+                document.title = `${savedName} - Είσοδος`;
+            } else {
+                companyNameEl.textContent = DEFAULT_NAME;
+            }
+
+            updateLogo(savedLogo);
+        });
+
+        // Άνοιγμα modal ρυθμίσεων
+        settingsBtn.addEventListener('click', () => {
+            inputCompanyName.value = companyNameEl.textContent.trim();
+            const currentSavedLogo = localStorage.getItem('erp_company_logo') || '';
+            // Αν το τρέχον logo είναι base64 (ανεβασμένο αρχείο), δεν γεμίζουμε το URL input
+            logoUrlInput.value = currentSavedLogo.startsWith('data:') ? '' : currentSavedLogo;
+            logoFileInput.value = ''; 
+
+            settingsModal.classList.remove('hidden');
+        });
+
+        // Κλείσιμο modal ρυθμίσεων
+        closeModalBtn.addEventListener('click', () => {
+            settingsModal.classList.add('hidden');
+        });
+
+        // Κλείσιμο modal κάνοντας κλικ έξω από αυτό
+        settingsModal.addEventListener('click', (e) => {
+            if (e.target === settingsModal) {
+                settingsModal.classList.add('hidden');
+            }
+        });
+
+        // Αποθήκευση αλλαγών
+        saveSettingsBtn.addEventListener('click', () => {
+            const newName = inputCompanyName.value.trim() || DEFAULT_NAME;
+            
+            // Αποθήκευση ονόματος
+            companyNameEl.textContent = newName;
+            document.title = `${newName} - Είσοδος`;
+            localStorage.setItem('erp_company_name', newName);
+
+            // Διαχείριση Λογοτύπου
+            const file = logoFileInput.files[0];
+            const urlVal = logoUrlInput.value.trim();
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const base64Image = e.target.result;
+                    updateLogo(base64Image);
+                    localStorage.setItem('erp_company_logo', base64Image);
+                };
+                reader.readAsDataURL(file);
+            } else if (urlVal) {
+                updateLogo(urlVal);
+                localStorage.setItem('erp_company_logo', urlVal);
+            } else if (!urlVal && !file && !localStorage.getItem('erp_company_logo')) {
+                // Αν δεν έχει επιλεγεί τίποτα και δεν υπήρχε ήδη αποθηκευμένο
+                updateLogo(null);
+            }
+
+            settingsModal.classList.add('hidden');
+        });
+
+        // Άνοιγμα Custom Modal Επιβεβαίωσης για Επαναφορά
+        resetSettingsBtn.addEventListener('click', () => {
+            confirmModal.classList.remove('hidden');
+        });
+
+        // Επιβεβαίωση Επαναφοράς (Ναι)
+        confirmYesBtn.addEventListener('click', () => {
+            localStorage.removeItem('erp_company_name');
+            localStorage.removeItem('erp_company_logo');
+            
+            companyNameEl.textContent = DEFAULT_NAME;
+            document.title = `${DEFAULT_NAME} - Είσοδος`;
+            updateLogo(null);
+
+            confirmModal.classList.add('hidden');
+            settingsModal.classList.add('hidden');
+        });
+
+        // Ακύρωση Επαναφοράς (Όχι)
+        confirmNoBtn.addEventListener('click', () => {
+            confirmModal.classList.add('hidden');
+        });
+    </script>
 
 </body>
 </html>
